@@ -1,8 +1,11 @@
+
+
+import 'package:diary/screens/statistics_screen.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import '../main.dart';
 import '../models/diary_entry_isar.dart';
-import '../services/database_service.dart.dart';
+import '../services/database_service.dart';
 import '../services/media_service.dart';
 import 'create_note_screen.dart';
 
@@ -47,6 +50,7 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
           ),
         ),
         actions: [
+          // Favorite button
           IconButton(
             icon: Icon(
               entry.isFavorite ? Icons.favorite : Icons.favorite_border,
@@ -54,14 +58,16 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
             ),
             onPressed: () => _toggleFavorite(),
           ),
+          // Edit button
           IconButton(
             icon: const Icon(Icons.edit),
-            onPressed: () => _editNote(),
+            onPressed: () => _editEntry(),
           ),
+          // Menu button (delete)
           PopupMenuButton<String>(
             onSelected: (value) {
               if (value == 'delete') {
-                _deleteNote();
+                _deleteEntry();
               }
             },
             itemBuilder: (BuildContext context) => [
@@ -71,7 +77,7 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
                   children: [
                     Icon(Icons.delete, color: Colors.red),
                     SizedBox(width: 8),
-                    Text('Eliminar'),
+                    Text('Delete'),
                   ],
                 ),
               ),
@@ -84,7 +90,7 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Título
+            // Entry Title
             Text(
               entry.title,
               style: TextStyle(
@@ -95,7 +101,7 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
             ),
             const SizedBox(height: 16),
 
-            // Contenido
+            // Entry Content
             Text(
               entry.content,
               style: TextStyle(
@@ -106,10 +112,10 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
             ),
             const SizedBox(height: 24),
 
-            // Etiquetas
+            // Tags Section
             if (entry.tags.isNotEmpty) ...[
               Text(
-                'Etiquetas:',
+                'Tags:',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -125,14 +131,14 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF007C91).withOpacity(0.1),
+                      color: const Color(0xFF7B2D8E).withOpacity(0.1), // Purple
                       borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: const Color(0xFF007C91)),
+                      border: Border.all(color: const Color(0xFF7B2D8E)), // Purple
                     ),
                     child: Text(
                       tag,
                       style: const TextStyle(
-                        color: Color(0xFF007C91),
+                        color: Color(0xFF7B2D8E), // Purple
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
                       ),
@@ -143,10 +149,10 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
               const SizedBox(height: 24),
             ],
 
-            // Imágenes adjuntas
+            // Attached Images Section
             if (entry.attachedImages.isNotEmpty) ...[
               Text(
-                'Imágenes adjuntas (${entry.attachedImages.length})',
+                'Attached Images (${entry.attachedImages.length})',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -214,10 +220,10 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
               const SizedBox(height: 24),
             ],
 
-            // Audios adjuntos
+            // Attached Audio Section
             if (entry.attachedAudios.isNotEmpty) ...[
               Text(
-                'Audios adjuntos (${entry.attachedAudios.length})',
+                'Attached Audio (${entry.attachedAudios.length})',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -230,7 +236,7 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
               }),
             ],
 
-            // Información adicional
+            // Additional Information Section
             const SizedBox(height: 32),
             Container(
               padding: const EdgeInsets.all(16),
@@ -242,7 +248,7 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Información',
+                    'Information',
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -251,7 +257,7 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Creado: ${entry.formattedDate}',
+                    'Created: ${entry.formattedDate}',
                     style: TextStyle(
                       fontSize: 12,
                       color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
@@ -259,7 +265,7 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
                   ),
                   if (entry.attachedImages.isNotEmpty)
                     Text(
-                      'Imágenes: ${entry.attachedImages.length}',
+                      'Images: ${entry.attachedImages.length}',
                       style: TextStyle(
                         fontSize: 12,
                         color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
@@ -267,7 +273,7 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
                     ),
                   if (entry.attachedAudios.isNotEmpty)
                     Text(
-                      'Audios: ${entry.attachedAudios.length}',
+                      'Audio clips: ${entry.attachedAudios.length}',
                       style: TextStyle(
                         fontSize: 12,
                         color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
@@ -282,6 +288,7 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
     );
   }
 
+ 
   Widget _buildAudioItem(String audioPath, bool isDarkMode) {
     String audioName = audioPath.split('/').last;
     bool isCurrentlyPlaying =
@@ -292,12 +299,12 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: isCurrentlyPlaying
-            ? (isDarkMode ? Colors.blue[900] : Colors.blue[50])
+            ? (isDarkMode ? const Color(0xFF7B2D8E).withOpacity(0.3) : const Color(0xFF7B2D8E).withOpacity(0.1))
             : (isDarkMode ? Colors.grey[800] : Colors.grey[100]),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: isCurrentlyPlaying
-              ? (isDarkMode ? Colors.blue[700]! : Colors.blue[300]!)
+              ? const Color(0xFF7B2D8E) // Purple
               : (isDarkMode ? Colors.grey[600]! : Colors.grey[300]!),
         ),
       ),
@@ -306,7 +313,7 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
           Icon(
             Icons.audiotrack,
             color: isCurrentlyPlaying
-                ? (isDarkMode ? Colors.blue[400] : Colors.blue[600])
+                ? const Color(0xFF7B2D8E) // Purple
                 : (isDarkMode ? Colors.white70 : Colors.black54),
           ),
           const SizedBox(width: 12),
@@ -318,7 +325,7 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
                   audioName,
                   style: TextStyle(
                     color: isCurrentlyPlaying
-                        ? (isDarkMode ? Colors.blue[200] : Colors.blue[800])
+                        ? const Color(0xFF7B2D8E) // Purple
                         : (isDarkMode ? Colors.white : Colors.black87),
                     fontWeight: FontWeight.w500,
                   ),
@@ -339,7 +346,7 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
                       );
                     }
                     return Text(
-                      'Cargando duración...',
+                      'Loading duration...',
                       style: TextStyle(
                         color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
                         fontSize: 12,
@@ -357,7 +364,7 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
                   : Icons.play_circle_filled,
               size: 40,
               color: isCurrentlyPlaying
-                  ? (isDarkMode ? Colors.blue[400] : Colors.blue[600])
+                  ? const Color(0xFF7B2D8E) // Purple
                   : (isDarkMode ? Colors.white70 : Colors.grey[600]),
             ),
             onPressed: () => _toggleAudioPlayback(audioPath),
@@ -367,22 +374,23 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
     );
   }
 
+  
   Future<void> _toggleAudioPlayback(String audioPath) async {
     try {
       if (isPlayingAudio && currentPlayingAudio == audioPath) {
-        // Pausar audio actual
+        // Pause current audio
         await MediaService().pauseAudio();
         setState(() {
           isPlayingAudio = false;
           currentPlayingAudio = null;
         });
       } else {
-        // Detener cualquier audio que esté reproduciéndose
+        // Stop any currently playing audio
         if (isPlayingAudio) {
           await MediaService().stopAudio();
         }
 
-        // Reproducir nuevo audio
+        // Play new audio
         final bool playbackStarted = await MediaService().playAudio(audioPath);
         if (playbackStarted) {
           setState(() {
@@ -390,14 +398,14 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
             currentPlayingAudio = audioPath;
           });
 
-          // Verificar cuando termine la reproducción
+          // Check when playback completes
           _checkAudioCompletion();
         }
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error en reproducción: $e'),
+          content: Text('Playback error: $e'),
           backgroundColor: Colors.red,
         ),
       );
@@ -419,6 +427,7 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
     });
   }
 
+ 
   Future<void> _toggleFavorite() async {
     try {
       entry.isFavorite = !entry.isFavorite;
@@ -429,8 +438,8 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
         SnackBar(
           content: Text(
             entry.isFavorite
-                ? 'Nota marcada como favorita'
-                : 'Nota desmarcada como favorita',
+                ? 'Entry marked as favorite'
+                : 'Entry removed from favorites',
           ),
           backgroundColor: Colors.green,
         ),
@@ -438,14 +447,14 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error al actualizar favorito: $e'),
+          content: Text('Error updating favorite: $e'),
           backgroundColor: Colors.red,
         ),
       );
     }
   }
 
-  Future<void> _editNote() async {
+  Future<void> _editEntry() async {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -463,7 +472,7 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
     );
 
     if (result == true) {
-      // Recargar la entrada actualizada
+      // Reload the updated entry
       final updatedEntry =
           await DatabaseService.instance.getEntryById(entry.id);
       if (updatedEntry != null) {
@@ -474,23 +483,23 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
     }
   }
 
-  Future<void> _deleteNote() async {
+  Future<void> _deleteEntry() async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Confirmar eliminación'),
+          title: const Text('Confirm Delete'),
           content:
-              const Text('¿Estás seguro de que quieres eliminar esta nota?'),
+              const Text('Are you sure you want to delete this entry?'),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Cancelar'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(true),
               style: TextButton.styleFrom(foregroundColor: Colors.red),
-              child: const Text('Eliminar'),
+              child: const Text('Delete'),
             ),
           ],
         );
@@ -505,7 +514,7 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
           Navigator.pop(context, true);
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Nota eliminada correctamente'),
+              content: Text('Entry deleted successfully'),
               backgroundColor: Colors.green,
             ),
           );
@@ -513,7 +522,7 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error al eliminar nota: $e'),
+            content: Text('Error deleting entry: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -523,13 +532,14 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
 
   @override
   void dispose() {
-    // Detener audio si está reproduciéndose al salir de la pantalla
+    // Stop audio when leaving the screen
     if (isPlayingAudio) {
       MediaService().stopAudio();
     }
     super.dispose();
   }
 }
+
 
 class ImageViewerScreen extends StatelessWidget {
   final List<String> imagePaths;
@@ -549,7 +559,7 @@ class ImageViewerScreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
         iconTheme: const IconThemeData(color: Colors.white),
         title: Text(
-          '${initialIndex + 1} de ${imagePaths.length}',
+          '${initialIndex + 1} of ${imagePaths.length}',
           style: const TextStyle(color: Colors.white),
         ),
       ),

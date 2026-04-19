@@ -1,3 +1,5 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -6,10 +8,10 @@ import '../components/bottom_nav.dart';
 import 'notes_screen.dart';
 import 'statistics_screen.dart';
 import 'reminders_screen.dart';
-import 'pin_setup_screen.dart.dart';
-import 'pin_verify_screen.dart.dart';
+import 'pin_setup_screen.dart';
+import 'pin_verify_screen.dart';
 import '../main.dart';
-import '../services/database_service.dart.dart';
+import '../services/database_service.dart';
 import '../services/access_code_service.dart';
 import '../services/media_service.dart';
 import '../services/notification_service.dart';
@@ -25,7 +27,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool hasAccessCode = false;
   bool accessCodeEnabled = false;
   Map<String, int> _stats = {'total': 0, 'favorites': 0, 'consecutive_days': 0};
-  String _userName = 'Usuario';
+  String _userName = 'User';
   String? _profileImagePath;
 
   @override
@@ -110,13 +112,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Cambiar foto de perfil'),
+          title: const Text('Change Profile Picture'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                leading: const Icon(Icons.camera_alt, color: Color(0xFF007C91)),
-                title: const Text('Tomar foto'),
+                leading: const Icon(Icons.camera_alt, color: Color(0xFF7B2D8E)),
+                title: const Text('Take Photo'),
                 onTap: () {
                   Navigator.of(context).pop();
                   _pickImageFromCamera();
@@ -124,8 +126,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               ListTile(
                 leading:
-                    const Icon(Icons.photo_library, color: Color(0xFF007C91)),
-                title: const Text('Seleccionar de galería'),
+                    const Icon(Icons.photo_library, color: Color(0xFF7B2D8E)),
+                title: const Text('Choose from Gallery'),
                 onTap: () {
                   Navigator.of(context).pop();
                   _pickImageFromGallery();
@@ -134,7 +136,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               if (_profileImagePath != null)
                 ListTile(
                   leading: const Icon(Icons.delete, color: Colors.red),
-                  title: const Text('Eliminar foto'),
+                  title: const Text('Remove Photo'),
                   onTap: () {
                     Navigator.of(context).pop();
                     _removeProfileImage();
@@ -155,7 +157,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Foto de perfil actualizada'),
+              content: Text('Profile picture updated'),
               backgroundColor: Colors.green,
             ),
           );
@@ -165,7 +167,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error al tomar foto: $e'),
+            content: Text('Error taking photo: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -181,7 +183,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Foto de perfil actualizada'),
+              content: Text('Profile picture updated'),
               backgroundColor: Colors.green,
             ),
           );
@@ -191,7 +193,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error al seleccionar imagen: $e'),
+            content: Text('Error selecting image: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -202,10 +204,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _removeProfileImage() async {
     try {
       if (_profileImagePath != null) {
-        // Eliminar el archivo físico
         await MediaService().deleteImage(_profileImagePath!);
 
-        // Eliminar de SharedPreferences
         final prefs = await SharedPreferences.getInstance();
         await prefs.remove('profile_image_path');
 
@@ -216,7 +216,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Foto de perfil eliminada'),
+              content: Text('Profile picture removed'),
               backgroundColor: Colors.orange,
             ),
           );
@@ -226,7 +226,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error al eliminar foto: $e'),
+            content: Text('Error removing photo: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -242,11 +242,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Editar nombre de usuario'),
+          title: const Text('Edit Username'),
           content: TextField(
             controller: controller,
             decoration: const InputDecoration(
-              labelText: 'Nombre de usuario',
+              labelText: 'Username',
               border: OutlineInputBorder(),
             ),
             maxLength: 50,
@@ -255,7 +255,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancelar'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
@@ -265,13 +265,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Text('Nombre de usuario actualizado'),
+                      content: Text('Username updated'),
                       backgroundColor: Colors.green,
                     ),
                   );
                 }
               },
-              child: const Text('Guardar'),
+              child: const Text('Save'),
             ),
           ],
         );
@@ -281,19 +281,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   void _handleAccessCodeTap() async {
     if (!hasAccessCode) {
-      // No hay código configurado, ir a la pantalla de configuración
       final result = await Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (context) => const AccessCodeSetupScreen(),
+          builder: (context) => const PinSetupScreen(),
         ),
       );
 
       if (result == true) {
-        // Solo recargar después de configurar un nuevo código
         _loadAccessCodeStatus();
       }
     } else {
-      // Hay código configurado, mostrar opciones inmediatamente
       _showAccessCodeOptions();
     }
   }
@@ -310,13 +307,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ListTile(
                 leading: Icon(
                   accessCodeEnabled ? Icons.lock_open : Icons.lock,
-                  color: const Color(0xFF007C91),
+                  color: const Color(0xFF7B2D8E),
                 ),
                 title:
-                    Text(accessCodeEnabled ? 'Desactivar PIN' : 'Activar PIN'),
+                    Text(accessCodeEnabled ? 'Disable PIN' : 'Enable PIN'),
                 subtitle: Text(accessCodeEnabled
-                    ? 'El PIN dejará de proteger la aplicación'
-                    : 'El PIN protegerá la aplicación'),
+                    ? 'PIN will no longer protect the app'
+                    : 'PIN will protect the app'),
                 onTap: () {
                   Navigator.pop(context);
                   _toggleAccessCode();
@@ -324,9 +321,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               const Divider(),
               ListTile(
-                leading: const Icon(Icons.edit, color: Color(0xFF007C91)),
-                title: const Text('Cambiar PIN'),
-                subtitle: const Text('Configurar un nuevo código de acceso'),
+                leading: const Icon(Icons.edit, color: Color(0xFF7B2D8E)),
+                title: const Text('Change PIN'),
+                subtitle: const Text('Set up a new access code'),
                 onTap: () {
                   Navigator.pop(context);
                   _changeAccessCode();
@@ -335,9 +332,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const Divider(),
               ListTile(
                 leading: const Icon(Icons.delete, color: Colors.red),
-                title: const Text('Eliminar PIN'),
+                title: const Text('Remove PIN'),
                 subtitle:
-                    const Text('Remover completamente el código de acceso'),
+                    const Text('Completely remove the access code'),
                 onTap: () {
                   Navigator.pop(context);
                   _removeAccessCode();
@@ -353,11 +350,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _toggleAccessCode() async {
     if (accessCodeEnabled) {
-      // Desactivar - pedir verificación primero
       final result = await Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) =>
-              const AccessCodeVerificationScreen(canCancel: true),
+              const PinVerifyScreen(canCancel: true),
         ),
       );
 
@@ -367,20 +363,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('PIN desactivado exitosamente'),
+              content: Text('PIN disabled successfully'),
               backgroundColor: Colors.orange,
             ),
           );
         }
       }
     } else {
-      // Activar
       await AccessCodeService.setAccessCodeEnabled(true);
       _loadAccessCodeStatus();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('PIN activado exitosamente'),
+            content: Text('PIN enabled successfully'),
             backgroundColor: Colors.green,
           ),
         );
@@ -391,7 +386,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _changeAccessCode() async {
     final result = await Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (context) => const AccessCodeSetupScreen(isChanging: true),
+        builder: (context) => const PinSetupScreen(isChanging: true),
       ),
     );
 
@@ -401,25 +396,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _removeAccessCode() async {
-    // Mostrar diálogo de confirmación
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Eliminar código de acceso'),
+          title: const Text('Remove Access Code'),
           content: const Text(
-            '¿Estás seguro de que deseas eliminar completamente el código de acceso? '
-            'Esta acción no se puede deshacer.',
+            'Are you sure you want to completely remove the access code? '
+            'This action cannot be undone.',
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancelar'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () => Navigator.pop(context, true),
               style: TextButton.styleFrom(foregroundColor: Colors.red),
-              child: const Text('Eliminar'),
+              child: const Text('Remove'),
             ),
           ],
         );
@@ -427,11 +421,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
 
     if (confirm == true) {
-      // Verificar código antes de eliminar
       final verified = await Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) =>
-              const AccessCodeVerificationScreen(canCancel: true),
+              const PinVerifyScreen(canCancel: true),
         ),
       );
 
@@ -441,7 +434,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Código de acceso eliminado exitosamente'),
+              content: Text('Access code removed successfully'),
               backgroundColor: Colors.red,
             ),
           );
@@ -456,19 +449,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
       appBar: AppBar(
         leading: Padding(
           padding: const EdgeInsets.only(left: 8.0),
-          child: Icon(Icons.person, color: Color(0xFF007C91)),
+          child: Icon(Icons.person, color: const Color(0xFF7B2D8E)),
         ),
-        title: const Text('Mi Perfil',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-            )),
+        title: const Text(
+          'My Profile',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
+        ),
         actions: [
           IconButton(
               icon: const Icon(Icons.edit, size: 28),
               onPressed: () {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Editar perfil')),
+                  const SnackBar(content: Text('Edit profile coming soon')),
                 );
               }),
           IconButton(
@@ -539,7 +534,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                       return const Icon(
                                         Icons.person,
                                         size: 50,
-                                        color: Color(0xFF007C91),
+                                        color: Color(0xFF7B2D8E),
                                       );
                                     },
                                   ),
@@ -547,7 +542,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               : const Icon(
                                   Icons.person,
                                   size: 50,
-                                  color: Color(0xFF007C91),
+                                  color: Color(0xFF7B2D8E),
                                 ),
                         ),
                       ),
@@ -560,7 +555,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             width: 32,
                             height: 32,
                             decoration: BoxDecoration(
-                              color: const Color(0xFF007C91),
+                              color: const Color(0xFF7B2D8E),
                               shape: BoxShape.circle,
                               border: Border.all(
                                   color: Theme.of(context).brightness ==
@@ -607,7 +602,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'usuario@email.com',
+                    'user@example.com',
                     style: TextStyle(
                       fontSize: 16,
                       color: Theme.of(context).textTheme.bodyMedium?.color,
@@ -626,7 +621,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ),
                           );
                         },
-                        child: _ProfileStat('${_stats['total']}', 'Entradas'),
+                        child: _ProfileStat('${_stats['total']}', 'Entries'),
                       ),
                       GestureDetector(
                         onTap: () {
@@ -638,7 +633,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           );
                         },
                         child: _ProfileStat(
-                            '${_stats['consecutive_days']}', 'Días seguidos'),
+                            '${_stats['consecutive_days']}', 'Streak'),
                       ),
                       GestureDetector(
                         onTap: () {
@@ -646,12 +641,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             context,
                             MaterialPageRoute(
                               builder: (context) =>
-                                  const NotesScreen(initialFilter: 'Favoritas'),
+                                  const NotesScreen(initialFilter: 'Favorites'),
                             ),
                           );
                         },
                         child:
-                            _ProfileStat('${_stats['favorites']}', 'Favoritas'),
+                            _ProfileStat('${_stats['favorites']}', 'Favorites'),
                       ),
                     ],
                   ),
@@ -663,12 +658,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
             // Menu Options
             _MenuSection(
-              title: 'Mi Diario',
+              title: 'My Diary',
               items: [
                 _MenuItem(
                   icon: Icons.book_outlined,
-                  title: 'Mis Entradas',
-                  subtitle: 'Ver todas las entradas del diario',
+                  title: 'My Entries',
+                  subtitle: 'View all diary entries',
                   onTap: () {
                     Navigator.push(
                       context,
@@ -679,21 +674,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 _MenuItem(
                   icon: Icons.favorite_border,
-                  title: 'Favoritas',
-                  subtitle: 'Entradas marcadas como favoritas',
+                  title: 'Favorites',
+                  subtitle: 'Entries marked as favorites',
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (context) =>
-                              const NotesScreen(initialFilter: 'Favoritas')),
+                              const NotesScreen(initialFilter: 'Favorites')),
                     );
                   },
                 ),
                 _MenuItem(
                   icon: Icons.analytics_outlined,
-                  title: 'Estadísticas',
-                  subtitle: 'Análisis de tu actividad',
+                  title: 'Statistics',
+                  subtitle: 'Activity analysis',
                   onTap: () {
                     Navigator.push(
                       context,
@@ -706,12 +701,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
 
             _MenuSection(
-              title: 'Apariencia',
+              title: 'Appearance',
               items: [
                 _MenuItem(
                   icon: Icons.nightlight_round,
-                  title: 'Modo Oscuro',
-                  subtitle: 'Activar tema oscuro',
+                  title: 'Dark Mode',
+                  subtitle: 'Enable dark theme',
                   onTap: () {
                     DiaryApp.appKey.currentState?.toggleTheme();
                   },
@@ -721,8 +716,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 _MenuItem(
                   icon: Icons.notifications_outlined,
-                  title: 'Recordatorios',
-                  subtitle: 'Configurar notificaciones',
+                  title: 'Reminders',
+                  subtitle: 'Configure notifications',
                   onTap: () {
                     Navigator.push(
                       context,
@@ -733,21 +728,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
                 _MenuItem(
                   icon: Icons.notification_add_outlined,
-                  title: 'Probar Notificación',
-                  subtitle: 'Enviar notificación de prueba',
+                  title: 'Test Notification',
+                  subtitle: 'Send a test notification',
                   onTap: () async {
                     try {
                       await NotificationService().testNotification();
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('Notificación de prueba enviada ✓'),
+                          content: Text('Test notification sent ✓'),
                           backgroundColor: Colors.green,
                         ),
                       );
                     } catch (e) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('Error enviando notificación: $e'),
+                          content: Text('Error sending notification: $e'),
                           backgroundColor: Colors.red,
                         ),
                       );
@@ -758,29 +753,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
 
             _MenuSection(
-              title: 'Privacidad y Seguridad',
+              title: 'Privacy & Security',
               items: [
                 _MenuItem(
                   icon: Icons.lock_outline,
-                  title: 'Código de Acceso',
+                  title: 'Access Code',
                   subtitle: hasAccessCode
                       ? (accessCodeEnabled
-                          ? 'PIN activado'
-                          : 'PIN configurado pero desactivado')
-                      : 'Proteger app con PIN',
+                          ? 'PIN enabled'
+                          : 'PIN configured but disabled')
+                      : 'Protect app with PIN',
                   onTap: () => _handleAccessCodeTap(),
                   hasSwitch: hasAccessCode,
                   switchValue: accessCodeEnabled,
                 ),
                 _MenuItem(
                   icon: Icons.shield_outlined,
-                  title: 'Privacidad',
-                  subtitle: 'Configurar opciones de privacidad',
+                  title: 'Privacy',
+                  subtitle: 'Configure privacy options',
                   onTap: () {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                          content: Text(
-                              'Próximamente: Configuración de privacidad')),
+                          content: Text('Coming soon: Privacy settings')),
                     );
                   },
                 ),
@@ -799,42 +793,38 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     context: context,
                     builder: (BuildContext context) {
                       return AlertDialog(
-                        title: const Text('Cerrar Sesión'),
+                        title: const Text('Sign Out'),
                         content: const Text(
-                            '¿Estás seguro que deseas cerrar sesión?'),
+                            'Are you sure you want to sign out?'),
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.of(context).pop(),
-                            child: const Text('Cancelar'),
+                            child: const Text('Cancel'),
                           ),
                           TextButton(
                             onPressed: () async {
                               Navigator.of(context).pop();
 
-                              // Limpiar el estado de login para que pida PIN la próxima vez
                               await AccessCodeService.clearLoginState();
 
-                              // Verificar si hay PIN activo
                               final hasActivePin = await AccessCodeService
                                       .isAccessCodeEnabled() &&
                                   await AccessCodeService.hasAccessCode();
 
                               if (hasActivePin) {
-                                // Cerrar completamente la aplicación
                                 SystemNavigator.pop();
                               } else {
-                                // Si no hay PIN, solo mostrar mensaje
                                 if (mounted) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
-                                      content: Text('Sesión cerrada.'),
+                                      content: Text('Signed out.'),
                                       backgroundColor: Colors.green,
                                     ),
                                   );
                                 }
                               }
                             },
-                            child: const Text('Cerrar Sesión'),
+                            child: const Text('Sign Out'),
                           ),
                         ],
                       );
@@ -849,7 +839,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
                 child: const Text(
-                  'Cerrar Sesión',
+                  'Sign Out',
                   style: TextStyle(
                     color: Colors.red,
                     fontSize: 16,
@@ -868,6 +858,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 }
 
+
 class _ProfileStat extends StatelessWidget {
   final String value;
   final String label;
@@ -883,7 +874,7 @@ class _ProfileStat extends StatelessWidget {
           style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF007C91),
+            color: Color(0xFF7B2D8E),
           ),
         ),
         Text(
@@ -897,6 +888,7 @@ class _ProfileStat extends StatelessWidget {
     );
   }
 }
+
 
 class _MenuSection extends StatelessWidget {
   final String title;
@@ -943,6 +935,7 @@ class _MenuSection extends StatelessWidget {
   }
 }
 
+
 class _MenuItem extends StatelessWidget {
   final IconData icon;
   final String title;
@@ -967,12 +960,12 @@ class _MenuItem extends StatelessWidget {
         width: 40,
         height: 40,
         decoration: BoxDecoration(
-          color: const Color(0xFF007C91).withOpacity(0.1),
+          color: const Color(0xFF7B2D8E).withOpacity(0.1),
           borderRadius: BorderRadius.circular(10),
         ),
         child: Icon(
           icon,
-          color: const Color(0xFF007C91),
+          color: const Color(0xFF7B2D8E),
           size: 20,
         ),
       ),
@@ -995,7 +988,7 @@ class _MenuItem extends StatelessWidget {
           ? Switch(
               value: switchValue,
               onChanged: (value) => onTap(),
-              activeThumbColor: const Color(0xFF007C91),
+              activeColor: const Color(0xFF7B2D8E),
             )
           : Icon(
               Icons.arrow_forward_ios,

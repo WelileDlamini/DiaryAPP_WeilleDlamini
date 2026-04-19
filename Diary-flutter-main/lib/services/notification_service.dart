@@ -1,3 +1,5 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
@@ -13,40 +15,40 @@ class NotificationService {
   final FlutterLocalNotificationsPlugin _notifications =
       FlutterLocalNotificationsPlugin();
 
-  static const String _reminderKey = 'diary_reminder_settings';
+  static const String _reminderKey = 'mydiary_reminder_settings';
 
-  // Configuración de recordatorios
+  // Reminder settings configuration
   Map<String, dynamic> _reminderSettings = {
     'enabled': false,
     'time': {'hour': 20, 'minute': 0},
-    'days': [false, false, false, false, false, false, false], // Lun-Dom
+    'days': [false, false, false, false, false, false, false], // Mon-Sun
     'motivationalQuotes': true,
     'streakReminders': true,
     'weeklyReview': false,
   };
 
   final List<String> _motivationalMessages = [
-    "💭 Es hora de reflexionar sobre tu día",
-    "✨ Un momento perfecto para escribir",
-    "📝 Captura tus pensamientos del día",
-    "🌟 Documenta este momento especial",
-    "💡 ¿Qué aprendiste hoy?",
-    "🌙 Termina el día con una reflexión",
-    "🎯 Mantén tu racha de escritura",
-    "📖 Tu diario te está esperando",
-    "🌅 Comparte tus experiencias del día",
-    "💖 Un pequeño momento para ti",
+    "💭 Time to reflect on your day",
+    "✨ A perfect moment to write",
+    "📝 Capture today's thoughts",
+    "🌟 Document this special moment",
+    "💡 What did you learn today?",
+    "🌙 End the day with a reflection",
+    "🎯 Keep your writing streak going",
+    "📖 Your diary is waiting for you",
+    "🌅 Share your experiences from today",
+    "💖 A small moment just for you",
   ];
 
   Future<void> initialize() async {
-    // Inicializar zonas horarias
+    // Initialize time zones
     tz.initializeTimeZones();
 
-    // Configuración para Android
+    // Android configuration
     const AndroidInitializationSettings androidSettings =
         AndroidInitializationSettings('@mipmap/ic_launcher');
 
-    // Configuración para iOS
+    // iOS configuration
     const DarwinInitializationSettings iosSettings =
         DarwinInitializationSettings(
       requestAlertPermission: true,
@@ -54,9 +56,9 @@ class NotificationService {
       requestSoundPermission: true,
     );
 
-    // Configuración para Windows
+    // Linux configuration
     const LinuxInitializationSettings linuxSettings =
-        LinuxInitializationSettings(defaultActionName: 'Abrir Diario');
+        LinuxInitializationSettings(defaultActionName: 'Open MyDiary');
 
     const InitializationSettings settings = InitializationSettings(
       android: androidSettings,
@@ -69,40 +71,40 @@ class NotificationService {
       onDidReceiveNotificationResponse: _onNotificationTapped,
     );
 
-    // Crear canales de notificación
+    // Create notification channels
     await _createNotificationChannels();
 
-    // Solicitar permisos explícitamente
+    // Request permissions explicitly
     await requestPermissions();
 
-    // Cargar configuración guardada
+    // Load saved settings
     await _loadReminderSettings();
   }
 
   Future<void> _createNotificationChannels() async {
     const AndroidNotificationChannel mainChannel = AndroidNotificationChannel(
       'main_channel',
-      'Recordatorios Principales',
-      description: 'Notificaciones para recordatorios de escribir en el diario',
+      'Main Reminders',
+      description: 'Notifications for diary writing reminders',
       importance: Importance.high,
       enableVibration: true,
       enableLights: true,
-      ledColor: Color(0xFF6200EA),
+      ledColor: Color(0xFF7B2D8E),
     );
 
     const AndroidNotificationChannel motivationalChannel =
         AndroidNotificationChannel(
       'motivational_channel',
-      'Mensajes Motivacionales',
-      description: 'Mensajes motivacionales para escribir en el diario',
+      'Motivational Messages',
+      description: 'Motivational messages for diary writing',
       importance: Importance.defaultImportance,
       enableVibration: true,
     );
 
     const AndroidNotificationChannel weeklyChannel = AndroidNotificationChannel(
       'weekly_channel',
-      'Resúmenes Semanales',
-      description: 'Recordatorios para revisar la semana',
+      'Weekly Summaries',
+      description: 'Reminders to review your week',
       importance: Importance.high,
       enableVibration: true,
     );
@@ -120,12 +122,12 @@ class NotificationService {
   }
 
   Future<void> _onNotificationTapped(NotificationResponse response) async {
-    // Manejar cuando el usuario toca la notificación
-    print('Notificación tocada: ${response.payload}');
+    // Handle when user taps on notification
+    print('Notification tapped: ${response.payload}');
   }
 
   Future<bool> requestPermissions() async {
-    // Para Android 13+
+    // For Android 13+
     if (await _notifications
             .resolvePlatformSpecificImplementation<
                 AndroidFlutterLocalNotificationsPlugin>()
@@ -134,7 +136,7 @@ class NotificationService {
       return true;
     }
 
-    // Para iOS
+    // For iOS
     final iosImplementation =
         _notifications.resolvePlatformSpecificImplementation<
             IOSFlutterLocalNotificationsPlugin>();
@@ -148,7 +150,7 @@ class NotificationService {
       return result ?? false;
     }
 
-    return true; // Para desktop asumimos que está permitido
+    return true; // For desktop, assume it's allowed
   }
 
   Future<void> _loadReminderSettings() async {
@@ -160,7 +162,7 @@ class NotificationService {
         _reminderSettings = json.decode(settingsJson);
       }
     } catch (e) {
-      print('Error cargando configuración de recordatorios: $e');
+      print('Error loading reminder settings: $e');
     }
   }
 
@@ -170,10 +172,10 @@ class NotificationService {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_reminderKey, json.encode(settings));
 
-      // Reprogramar notificaciones
+      // Reschedule reminders
       await _scheduleReminders();
     } catch (e) {
-      print('Error guardando configuración de recordatorios: $e');
+      print('Error saving reminder settings: $e');
     }
   }
 
@@ -182,7 +184,7 @@ class NotificationService {
   }
 
   Future<void> _scheduleReminders() async {
-    // Cancelar todas las notificaciones existentes
+    // Cancel all existing notifications
     await _notifications.cancelAll();
 
     if (!_reminderSettings['enabled']) {
@@ -192,18 +194,18 @@ class NotificationService {
     final time = _reminderSettings['time'];
     final days = List<bool>.from(_reminderSettings['days']);
 
-    // Programar notificaciones para cada día seleccionado
+    // Schedule notifications for each selected day
     for (int i = 0; i < days.length; i++) {
       if (days[i]) {
         await _scheduleDailyNotification(
-          i + 1, // 1=Lunes, 7=Domingo
+          i + 1, // 1=Monday, 7=Sunday
           time['hour'],
           time['minute'],
         );
       }
     }
 
-    // Programar resumen semanal si está habilitado
+    // Schedule weekly review if enabled
     if (_reminderSettings['weeklyReview']) {
       await _scheduleWeeklyReview();
     }
@@ -215,26 +217,25 @@ class NotificationService {
       final scheduledDate = _nextInstanceOfWeekday(weekday, hour, minute);
 
       print(
-          'Programando notificación para: $scheduledDate (día $weekday, hora $hour:$minute)');
+          'Scheduling notification for: $scheduledDate (day $weekday, time $hour:$minute)');
 
       String message = _getRandomMotivationalMessage();
 
       if (_reminderSettings['streakReminders']) {
-        // Aquí podrías agregar lógica para obtener la racha actual
-        // message += "\n🔥 Mantén tu racha de escritura";
+        // You could add logic here to get the current streak
+        // message += "\n🔥 Keep your writing streak";
       }
 
       await _notifications.zonedSchedule(
-        weekday, // ID único para cada día
-        'Diario Personal',
+        weekday, // Unique ID for each day
+        'MyDiary',
         message,
         tz.TZDateTime.from(scheduledDate, tz.local),
         const NotificationDetails(
           android: AndroidNotificationDetails(
             'main_channel',
-            'Recordatorios Principales',
-            channelDescription:
-                'Notificaciones para recordatorios de escribir en el diario',
+            'Main Reminders',
+            channelDescription: 'Notifications for diary writing reminders',
             importance: Importance.high,
             priority: Priority.high,
             icon: '@mipmap/ic_launcher',
@@ -257,27 +258,27 @@ class NotificationService {
       );
 
       print(
-          'Notificación programada exitosamente para el día $weekday a las $hour:$minute');
+          'Notification successfully scheduled for day $weekday at $hour:$minute');
     } catch (e) {
-      print('Error programando notificación diaria: $e');
+      print('Error scheduling daily notification: $e');
     }
   }
 
   Future<void> _scheduleWeeklyReview() async {
     try {
-      // Programar para domingo a las 19:00
+      // Schedule for Sunday at 7:00 PM
       final nextSunday = _nextInstanceOfWeekday(7, 19, 0);
 
       await _notifications.zonedSchedule(
-        100, // ID único para resumen semanal
-        'Resumen Semanal - Diario',
-        '📊 Revisa tu semana de escritura y reflexiona sobre tus experiencias',
+        100, // Unique ID for weekly summary
+        'Weekly Summary - MyDiary',
+        '📊 Review your writing week and reflect on your experiences',
         tz.TZDateTime.from(nextSunday, tz.local),
         const NotificationDetails(
           android: AndroidNotificationDetails(
-            'diary_weekly',
-            'Resumen Semanal',
-            channelDescription: 'Notificación semanal para revisar tu progreso',
+            'weekly_channel',
+            'Weekly Summaries',
+            channelDescription: 'Weekly notification to review your progress',
             importance: Importance.high,
             priority: Priority.high,
             icon: '@mipmap/ic_launcher',
@@ -295,7 +296,7 @@ class NotificationService {
         payload: 'weekly_review',
       );
     } catch (e) {
-      print('Error programando resumen semanal: $e');
+      print('Error scheduling weekly review: $e');
     }
   }
 
@@ -305,7 +306,7 @@ class NotificationService {
 
     int daysToAdd = weekday - currentWeekday;
     if (daysToAdd <= 0) {
-      daysToAdd += 7; // Próxima semana
+      daysToAdd += 7; // Next week
     }
 
     final scheduledDate = DateTime(
@@ -316,7 +317,7 @@ class NotificationService {
       minute,
     );
 
-    // Si es el mismo día pero ya pasó la hora, programar para la próxima semana
+    // If it's the same day but the time has already passed, schedule for next week
     if (weekday == currentWeekday && scheduledDate.isBefore(now)) {
       return scheduledDate.add(const Duration(days: 7));
     }
@@ -324,19 +325,18 @@ class NotificationService {
     return scheduledDate;
   }
 
-  // Método para probar notificaciones inmediatamente
+  // Method to test notifications immediately
   Future<void> testNotification() async {
     try {
       await _notifications.show(
-        999, // ID único para prueba
-        'Prueba de Notificación',
-        'Esta es una notificación de prueba para verificar que funciona correctamente 📱',
+        999, // Unique test ID
+        'Test Notification',
+        'This is a test notification to verify everything is working correctly 📱',
         const NotificationDetails(
           android: AndroidNotificationDetails(
             'main_channel',
-            'Recordatorios Principales',
-            channelDescription:
-                'Notificaciones para recordatorios de escribir en el diario',
+            'Main Reminders',
+            channelDescription: 'Notifications for diary writing reminders',
             importance: Importance.high,
             priority: Priority.high,
             icon: '@mipmap/ic_launcher',
@@ -351,15 +351,15 @@ class NotificationService {
         ),
         payload: 'test_notification',
       );
-      print('Notificación de prueba enviada');
+      print('Test notification sent');
     } catch (e) {
-      print('Error enviando notificación de prueba: $e');
+      print('Error sending test notification: $e');
     }
   }
 
   String _getRandomMotivationalMessage() {
     if (!_reminderSettings['motivationalQuotes']) {
-      return "Es hora de escribir en tu diario";
+      return "Time to write in your diary";
     }
 
     final random =
@@ -370,14 +370,14 @@ class NotificationService {
   Future<void> showTestNotification() async {
     try {
       await _notifications.show(
-        999, // ID temporal para prueba
-        'Diario Personal - Prueba',
+        999, // Temporary test ID
+        'MyDiary - Test',
         _getRandomMotivationalMessage(),
         const NotificationDetails(
           android: AndroidNotificationDetails(
-            'diary_test',
-            'Notificaciones de Prueba',
-            channelDescription: 'Notificación de prueba',
+            'main_channel',
+            'Main Reminders',
+            channelDescription: 'Notifications for diary writing reminders',
             importance: Importance.high,
             priority: Priority.high,
             icon: '@mipmap/ic_launcher',
@@ -391,7 +391,7 @@ class NotificationService {
         payload: 'test_notification',
       );
     } catch (e) {
-      print('Error mostrando notificación de prueba: $e');
+      print('Error showing test notification: $e');
     }
   }
 

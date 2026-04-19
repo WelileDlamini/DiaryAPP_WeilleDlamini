@@ -1,37 +1,37 @@
 import 'package:flutter/material.dart';
-import 'security_wrapper.dart.dart';
+import 'security_wrapper.dart';  // This imports the correct StatefulWidget
 import 'providers/theme_provider.dart';
 import 'services/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Inicializar la base de datos SharedPreferences
-  // No necesita inicialización explícita
+  // Initialize SharedPreferences database
+  // No explicit initialization needed
 
-  // Inicializar el servicio de notificaciones
+  // Initialize notification service
   await NotificationService().initialize();
 
-  // Solicitar permisos de notificación
+  // Request notification permissions
   await NotificationService().requestPermissions();
 
-  runApp(DiaryApp());
+  runApp(MyDiaryApp());
 }
 
-class DiaryApp extends StatefulWidget {
-  static final GlobalKey<_DiaryAppState> appKey = GlobalKey<_DiaryAppState>();
+class MyDiaryApp extends StatefulWidget {
+  static final GlobalKey<_MyDiaryAppState> appKey = GlobalKey<_MyDiaryAppState>();
 
-  DiaryApp() : super(key: appKey);
+  MyDiaryApp() : super(key: appKey);
 
   @override
-  State<DiaryApp> createState() => _DiaryAppState();
+  State<MyDiaryApp> createState() => _MyDiaryAppState();
 
-  static _DiaryAppState? of(BuildContext context) {
+  static _MyDiaryAppState? of(BuildContext context) {
     return appKey.currentState;
   }
 }
 
-class _DiaryAppState extends State<DiaryApp> {
+class _MyDiaryAppState extends State<MyDiaryApp> {
   final ThemeProvider _themeProvider = ThemeProvider();
 
   @override
@@ -51,11 +51,11 @@ class _DiaryAppState extends State<DiaryApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'DIARY',
+      title: 'MyDiary',
       debugShowCheckedModeBanner: false,
       theme: _themeProvider.currentTheme,
       themeMode: _themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
-      home: const AppLockWrapper(),
+      home: const SecurityWrapper(),  // Now this uses the correct Widget from security_wrapper.dart
     );
   }
 
@@ -65,3 +65,4 @@ class _DiaryAppState extends State<DiaryApp> {
     super.dispose();
   }
 }
+

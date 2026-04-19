@@ -1,3 +1,5 @@
+
+
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:image_picker/image_picker.dart';
@@ -17,10 +19,10 @@ class MediaService {
   AudioPlayer? _audioPlayer;
   String? _currentPlayingAudio;
 
-  /// Obtener el directorio donde se almacenarán las imágenes de la app
+  /// Get the directory where app images will be stored
   Future<Directory> get _imageDirectory async {
     final appDir = await getApplicationDocumentsDirectory();
-    final imageDir = Directory(path.join(appDir.path, 'diary_images'));
+    final imageDir = Directory(path.join(appDir.path, 'mydiary_images'));
 
     if (!await imageDir.exists()) {
       await imageDir.create(recursive: true);
@@ -29,10 +31,10 @@ class MediaService {
     return imageDir;
   }
 
-  /// Obtener el directorio donde se almacenarán los audios de la app
+  /// Get the directory where app audio files will be stored
   Future<Directory> get _audioDirectory async {
     final appDir = await getApplicationDocumentsDirectory();
-    final audioDir = Directory(path.join(appDir.path, 'diary_audios'));
+    final audioDir = Directory(path.join(appDir.path, 'mydiary_audios'));
 
     if (!await audioDir.exists()) {
       await audioDir.create(recursive: true);
@@ -41,14 +43,18 @@ class MediaService {
     return audioDir;
   }
 
-  /// Seleccionar imagen desde galería
+  // ==================================================
+  // IMAGE METHODS
+  // ==================================================
+
+  /// Pick an image from the device gallery
   Future<String?> pickImageFromGallery() async {
     try {
       final XFile? image = await _picker.pickImage(
         source: ImageSource.gallery,
         maxWidth: 1920,
         maxHeight: 1080,
-        imageQuality: 85, // Comprimir para ahorrar espacio
+        imageQuality: 85, // Compress to save space
       );
 
       if (image != null) {
@@ -60,7 +66,7 @@ class MediaService {
     return null;
   }
 
-  /// Tomar foto con cámara
+  /// Take a photo using the device camera
   Future<String?> takePhoto() async {
     try {
       final XFile? image = await _picker.pickImage(
@@ -79,7 +85,7 @@ class MediaService {
     return null;
   }
 
-  /// Guardar imagen en directorio local de la app
+  /// Save an image to the app's local directory
   Future<String> _saveImageToLocalDirectory(XFile image) async {
     final imageDir = await _imageDirectory;
     final fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
@@ -89,12 +95,12 @@ class MediaService {
     return localImage.path;
   }
 
-  /// Verificar si una imagen existe
+  /// Check if an image exists at the given path
   Future<bool> imageExists(String imagePath) async {
     return await File(imagePath).exists();
   }
 
-  /// Eliminar imagen del almacenamiento local
+  /// Delete an image from local storage
   Future<bool> deleteImage(String imagePath) async {
     try {
       final file = File(imagePath);
@@ -108,7 +114,7 @@ class MediaService {
     return false;
   }
 
-  /// Obtener el tamaño de una imagen en bytes
+  /// Get the size of an image in bytes
   Future<int> getImageSize(String imagePath) async {
     try {
       final file = File(imagePath);
@@ -121,7 +127,7 @@ class MediaService {
     return 0;
   }
 
-  /// Limpiar imágenes huérfanas (que no están referenciadas en ninguna entrada)
+  /// Clean up orphaned images (not referenced in any entry)
   Future<void> cleanOrphanedImages(List<String> referencedImagePaths) async {
     try {
       final imageDir = await _imageDirectory;
@@ -140,7 +146,7 @@ class MediaService {
     }
   }
 
-  /// Obtener información de almacenamiento
+  /// Get storage information for images
   Future<Map<String, dynamic>> getStorageInfo() async {
     try {
       final imageDir = await _imageDirectory;
@@ -171,9 +177,9 @@ class MediaService {
     }
   }
 
-  // ============ MÉTODOS DE AUDIO ============
+ 
 
-  /// Inicializar el grabador de audio
+  /// Initialize the audio recorder
   Future<bool> _initializeRecorder() async {
     try {
       _audioRecorder ??= FlutterSoundRecorder();
@@ -189,17 +195,17 @@ class MediaService {
     }
   }
 
-  /// Verificar permisos de micrófono
+  /// Check microphone permission status
   Future<bool> checkMicrophonePermission() async {
     try {
-      // Verificar si ya tenemos el permiso
+      // Check if we already have permission
       PermissionStatus status = await Permission.microphone.status;
 
       if (status.isGranted) {
         return true;
       }
 
-      // Si no, solicitarlo
+      // If not, request it
       status = await Permission.microphone.request();
       return status.isGranted;
     } catch (e) {
@@ -208,7 +214,7 @@ class MediaService {
     }
   }
 
-  /// Iniciar grabación de audio
+  /// Start recording audio
   Future<bool> startRecording() async {
     try {
       if (!await _initializeRecorder()) {
@@ -230,7 +236,7 @@ class MediaService {
     }
   }
 
-  /// Detener grabación y retornar la ruta del archivo
+  /// Stop recording and return the file path
   Future<String?> stopRecording() async {
     try {
       if (_audioRecorder != null && _audioRecorder!.isRecording) {
@@ -243,7 +249,7 @@ class MediaService {
     }
   }
 
-  /// Verificar si está grabando
+  /// Check if currently recording
   Future<bool> isRecording() async {
     try {
       return _audioRecorder?.isRecording ?? false;
@@ -253,7 +259,7 @@ class MediaService {
     }
   }
 
-  /// Limpiar recursos del grabador
+  /// Dispose recorder resources
   Future<void> disposeRecorder() async {
     try {
       if (_audioRecorder != null) {
@@ -266,7 +272,7 @@ class MediaService {
     }
   }
 
-  /// Eliminar audio del almacenamiento local
+  /// Delete an audio file from local storage
   Future<bool> deleteAudio(String audioPath) async {
     try {
       final file = File(audioPath);
@@ -280,9 +286,9 @@ class MediaService {
     return false;
   }
 
-  // ============ MÉTODOS DE REPRODUCCIÓN ============
 
-  /// Obtener duración de un archivo de audio
+
+  /// Get duration of an audio file
   Future<Duration?> getAudioDuration(String audioPath) async {
     try {
       _audioPlayer ??= AudioPlayer();
@@ -296,12 +302,12 @@ class MediaService {
     }
   }
 
-  /// Reproducir audio
+  /// Play an audio file
   Future<bool> playAudio(String audioPath) async {
     try {
       _audioPlayer ??= AudioPlayer();
 
-      // Detener audio actual si está reproduciéndose
+      // Stop current audio if playing
       if (_audioPlayer!.playing) {
         await _audioPlayer!.stop();
       }
@@ -316,7 +322,7 @@ class MediaService {
     }
   }
 
-  /// Pausar audio
+  /// Pause audio playback
   Future<void> pauseAudio() async {
     try {
       if (_audioPlayer != null && _audioPlayer!.playing) {
@@ -327,7 +333,7 @@ class MediaService {
     }
   }
 
-  /// Detener audio
+  /// Stop audio playback
   Future<void> stopAudio() async {
     try {
       if (_audioPlayer != null) {
@@ -339,16 +345,16 @@ class MediaService {
     }
   }
 
-  /// Verificar si está reproduciendo
+  /// Check if audio is currently playing
   bool get isPlaying => _audioPlayer?.playing ?? false;
 
-  /// Obtener audio actualmente reproduciéndose
+  /// Get the currently playing audio path
   String? get currentPlayingAudio => _currentPlayingAudio;
 
-  /// Obtener posición actual de reproducción
+  /// Get current playback position
   Duration get currentPosition => _audioPlayer?.position ?? Duration.zero;
 
-  /// Limpiar recursos del reproductor
+  /// Dispose player resources
   Future<void> disposePlayer() async {
     try {
       if (_audioPlayer != null) {
@@ -361,7 +367,7 @@ class MediaService {
     }
   }
 
-  /// Formatear duración a string legible
+  /// Format duration to a readable string
   static String formatDuration(Duration duration) {
     String twoDigits(int n) => n.toString().padLeft(2, "0");
     String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));

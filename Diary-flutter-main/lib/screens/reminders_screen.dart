@@ -1,3 +1,4 @@
+import 'package:diary/screens/statistics_screen.dart';
 import 'package:flutter/material.dart';
 import '../main.dart';
 import '../services/notification_service.dart';
@@ -20,22 +21,22 @@ class _RemindersScreenState extends State<RemindersScreen> {
   bool _weeklyReview = false;
 
   final List<String> _dayNames = [
-    'Lunes',
-    'Martes',
-    'Miércoles',
-    'Jueves',
-    'Viernes',
-    'Sábado',
-    'Domingo'
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday'
   ];
 
   final List<String> _motivationalMessages = [
-    "💭 Es hora de reflexionar sobre tu día",
-    "✨ Un momento perfecto para escribir",
-    "📝 Captura tus pensamientos del día",
-    "🌟 Documenta este momento especial",
-    "💡 ¿Qué aprendiste hoy?",
-    "🌙 Termina el día con una reflexión",
+    "💭 Time to reflect on your day",
+    "✨ A perfect moment to write",
+    "📝 Capture today's thoughts",
+    "🌟 Document this special moment",
+    "💡 What did you learn today?",
+    "🌙 End the day with a reflection",
   ];
 
   @override
@@ -62,11 +63,13 @@ class _RemindersScreenState extends State<RemindersScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Recordatorios',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-            )),
+        title: const Text(
+          'Reminders',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
+        ),
         actions: [
           IconButton(
               icon: Icon(
@@ -85,18 +88,18 @@ class _RemindersScreenState extends State<RemindersScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Recordatorio Principal
+            // Main Reminder Card
             _buildReminderCard(
-              'Recordatorio Diario',
-              'Recibe una notificación para escribir en tu diario',
+              'Daily Reminder',
+              'Receive a notification to write in your diary',
               Icons.notifications_active,
               Column(
                 children: [
                   SwitchListTile(
-                    title: const Text('Activar recordatorio diario'),
+                    title: const Text('Enable daily reminder'),
                     subtitle: Text(_dailyReminder
-                        ? 'Recordatorio activo a las ${_reminderTime.format(context)}'
-                        : 'Toca para activar'),
+                        ? 'Reminder active at ${_reminderTime.format(context)}'
+                        : 'Tap to enable'),
                     value: _dailyReminder,
                     onChanged: (value) {
                       setState(() {
@@ -106,14 +109,14 @@ class _RemindersScreenState extends State<RemindersScreen> {
                         _showTimePickerDialog();
                       }
                     },
-                    activeThumbColor: const Color(0xFF007C91),
+                    activeColor: const Color(0xFF7B2D8E),
                   ),
                   if (_dailyReminder) ...[
                     const Divider(),
                     ListTile(
                       leading: const Icon(Icons.access_time,
-                          color: Color(0xFF007C91)),
-                      title: const Text('Hora del recordatorio'),
+                          color: Color(0xFF7B2D8E)),
+                      title: const Text('Reminder time'),
                       subtitle: Text(_reminderTime.format(context)),
                       trailing: const Icon(Icons.edit),
                       onTap: _showTimePickerDialog,
@@ -125,11 +128,11 @@ class _RemindersScreenState extends State<RemindersScreen> {
 
             const SizedBox(height: 16),
 
-            // Días de la Semana
+            // Days of Week
             if (_dailyReminder) ...[
               _buildReminderCard(
-                'Días de la Semana',
-                'Selecciona en qué días quieres recibir recordatorios',
+                'Days of the Week',
+                'Select which days you want to receive reminders',
                 Icons.calendar_today,
                 Column(
                   children: [
@@ -142,7 +145,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
                             _selectedDays[i] = value ?? false;
                           });
                         },
-                        activeColor: const Color(0xFF007C91),
+                        activeColor: const Color(0xFF7B2D8E),
                         dense: true,
                       ),
                     if (!_selectedDays.contains(true))
@@ -162,7 +165,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
                             const SizedBox(width: 8),
                             const Expanded(
                               child: Text(
-                                'Selecciona al menos un día para recibir recordatorios',
+                                'Select at least one day to receive reminders',
                                 style: TextStyle(fontSize: 12),
                               ),
                             ),
@@ -175,46 +178,46 @@ class _RemindersScreenState extends State<RemindersScreen> {
               const SizedBox(height: 16),
             ],
 
-            // Tipos de Recordatorios
+            // Reminder Types
             _buildReminderCard(
-              'Tipos de Recordatorios',
-              'Personaliza el tipo de notificaciones que recibes',
+              'Reminder Types',
+              'Customize the types of notifications you receive',
               Icons.tune,
               Column(
                 children: [
                   SwitchListTile(
-                    title: const Text('Frases motivacionales'),
-                    subtitle: const Text('Incluir mensajes inspiradores'),
+                    title: const Text('Motivational quotes'),
+                    subtitle: const Text('Include inspirational messages'),
                     value: _motivationalQuotes,
                     onChanged: (value) {
                       setState(() {
                         _motivationalQuotes = value;
                       });
                     },
-                    activeThumbColor: const Color(0xFF007C91),
+                    activeColor: const Color(0xFF7B2D8E),
                   ),
                   SwitchListTile(
-                    title: const Text('Recordatorios de racha'),
+                    title: const Text('Streak reminders'),
                     subtitle:
-                        const Text('Notificaciones sobre tu racha actual'),
+                        const Text('Notifications about your current streak'),
                     value: _streakReminders,
                     onChanged: (value) {
                       setState(() {
                         _streakReminders = value;
                       });
                     },
-                    activeThumbColor: const Color(0xFF007C91),
+                    activeColor: const Color(0xFF7B2D8E),
                   ),
                   SwitchListTile(
-                    title: const Text('Resumen semanal'),
-                    subtitle: const Text('Recordatorio para revisar tu semana'),
+                    title: const Text('Weekly review'),
+                    subtitle: const Text('Reminder to review your week'),
                     value: _weeklyReview,
                     onChanged: (value) {
                       setState(() {
                         _weeklyReview = value;
                       });
                     },
-                    activeThumbColor: const Color(0xFF007C91),
+                    activeColor: const Color(0xFF7B2D8E),
                   ),
                 ],
               ),
@@ -222,19 +225,19 @@ class _RemindersScreenState extends State<RemindersScreen> {
 
             const SizedBox(height: 16),
 
-            // Vista Previa
+            // Preview
             if (_dailyReminder && _motivationalQuotes) ...[
               _buildReminderCard(
-                'Vista Previa',
-                'Así se verán tus notificaciones',
+                'Preview',
+                'See how your notifications will look',
                 Icons.preview,
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF007C91).withOpacity(0.1),
+                    color: const Color(0xFF7B2D8E).withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                        color: const Color(0xFF007C91).withOpacity(0.3)),
+                        color: const Color(0xFF7B2D8E).withOpacity(0.3)),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -244,7 +247,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
                           Container(
                             padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF007C91),
+                              color: const Color(0xFF7B2D8E),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: const Icon(Icons.edit,
@@ -256,14 +259,14 @@ class _RemindersScreenState extends State<RemindersScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'Diario Personal',
+                                  'My Diary',
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 14,
                                   ),
                                 ),
                                 Text(
-                                  'Hace 2 minutos',
+                                  'Just now',
                                   style: TextStyle(
                                     fontSize: 12,
                                     color: Colors.grey,
@@ -287,7 +290,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
               const SizedBox(height: 16),
             ],
 
-            // Botones de Acción
+            // Action Buttons
             Row(
               children: [
                 Expanded(
@@ -296,11 +299,11 @@ class _RemindersScreenState extends State<RemindersScreen> {
                       _showTestNotification();
                     },
                     icon: const Icon(Icons.send),
-                    label: const Text('Probar Notificación'),
+                    label: const Text('Test Notification'),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 12),
-                      side: const BorderSide(color: Color(0xFF007C91)),
-                      foregroundColor: const Color(0xFF007C91),
+                      side: const BorderSide(color: Color(0xFF7B2D8E)),
+                      foregroundColor: const Color(0xFF7B2D8E),
                     ),
                   ),
                 ),
@@ -309,9 +312,9 @@ class _RemindersScreenState extends State<RemindersScreen> {
                   child: ElevatedButton.icon(
                     onPressed: _saveSettings,
                     icon: const Icon(Icons.save),
-                    label: const Text('Guardar'),
+                    label: const Text('Save'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF007C91),
+                      backgroundColor: const Color(0xFF7B2D8E),
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
@@ -322,7 +325,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
 
             const SizedBox(height: 32),
 
-            // Información Adicional
+            // Additional Information
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -339,7 +342,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
                           color: Colors.blue[700], size: 20),
                       const SizedBox(width: 8),
                       const Text(
-                        'Información sobre Recordatorios',
+                        'About Reminders',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
@@ -349,10 +352,10 @@ class _RemindersScreenState extends State<RemindersScreen> {
                   ),
                   const SizedBox(height: 8),
                   const Text(
-                    '• Los recordatorios te ayudan a mantener el hábito de escribir\n'
-                    '• Puedes desactivarlos en cualquier momento\n'
-                    '• Las notificaciones aparecerán solo cuando tengas la app instalada\n'
-                    '• El resumen semanal se envía los domingos por la noche',
+                    '• Reminders help you maintain the habit of writing\n'
+                    '• You can disable them at any time\n'
+                    '• Notifications will only appear when the app is installed\n'
+                    '• Weekly reviews are sent on Sunday evenings',
                     style: TextStyle(fontSize: 12),
                   ),
                 ],
@@ -378,7 +381,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
           children: [
             Row(
               children: [
-                Icon(icon, color: const Color(0xFF007C91), size: 24),
+                Icon(icon, color: const Color(0xFF7B2D8E), size: 24),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
@@ -419,7 +422,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: Theme.of(context).colorScheme.copyWith(
-                  primary: const Color(0xFF007C91),
+                  primary: const Color(0xFF7B2D8E),
                 ),
           ),
           child: child!,
@@ -444,10 +447,10 @@ class _RemindersScreenState extends State<RemindersScreen> {
               children: [
                 Icon(Icons.check_circle, color: Colors.white),
                 SizedBox(width: 8),
-                Text('¡Notificación de prueba enviada!'),
+                Text('Test notification sent!'),
               ],
             ),
-            backgroundColor: Color(0xFF007C91),
+            backgroundColor: Color(0xFF7B2D8E),
             duration: Duration(seconds: 3),
           ),
         );
@@ -456,7 +459,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error al enviar notificación: $e'),
+            content: Text('Error sending notification: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -465,12 +468,11 @@ class _RemindersScreenState extends State<RemindersScreen> {
   }
 
   void _saveSettings() async {
-    // Validar configuración
+    // Validate settings
     if (_dailyReminder && !_selectedDays.contains(true)) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text(
-              'Por favor selecciona al menos un día para los recordatorios'),
+          content: Text('Please select at least one day for reminders'),
           backgroundColor: Colors.orange,
         ),
       );
@@ -478,7 +480,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
     }
 
     try {
-      // Crear configuración
+      // Create settings
       final settings = {
         'enabled': _dailyReminder,
         'time': {'hour': _reminderTime.hour, 'minute': _reminderTime.minute},
@@ -488,7 +490,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
         'weeklyReview': _weeklyReview,
       };
 
-      // Guardar configuración y programar notificaciones
+      // Save settings and schedule notifications
       await _notificationService.saveReminderSettings(settings);
 
       if (mounted) {
@@ -499,8 +501,8 @@ class _RemindersScreenState extends State<RemindersScreen> {
                 const Icon(Icons.check_circle, color: Colors.white),
                 const SizedBox(width: 8),
                 Text(_dailyReminder
-                    ? 'Recordatorios configurados correctamente'
-                    : 'Recordatorios desactivados'),
+                    ? 'Reminders configured successfully'
+                    : 'Reminders disabled'),
               ],
             ),
             backgroundColor: Colors.green,
@@ -508,14 +510,14 @@ class _RemindersScreenState extends State<RemindersScreen> {
           ),
         );
 
-        // Mostrar información adicional si se activaron
+        // Show additional info if enabled
         if (_dailyReminder) {
           final activeDays = _selectedDays.where((day) => day).length;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                  'Se programaron recordatorios para $activeDays ${activeDays == 1 ? 'día' : 'días'} a las ${_reminderTime.format(context)}'),
-              backgroundColor: const Color(0xFF007C91),
+                  'Reminders scheduled for $activeDays ${activeDays == 1 ? 'day' : 'days'} at ${_reminderTime.format(context)}'),
+              backgroundColor: const Color(0xFF7B2D8E),
               duration: const Duration(seconds: 4),
             ),
           );
@@ -525,7 +527,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error al guardar configuración: $e'),
+            content: Text('Error saving settings: $e'),
             backgroundColor: Colors.red,
           ),
         );

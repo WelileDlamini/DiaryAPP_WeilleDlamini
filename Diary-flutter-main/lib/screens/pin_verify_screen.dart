@@ -1,24 +1,24 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../services/access_code_service.dart';
 
-class AccessCodeVerificationScreen extends StatefulWidget {
+class PinVerifyScreen extends StatefulWidget {
   final bool canCancel;
   final VoidCallback? onVerificationSuccess;
 
-  const AccessCodeVerificationScreen({
+  const PinVerifyScreen({
     super.key,
     this.canCancel = true,
     this.onVerificationSuccess,
   });
 
   @override
-  State<AccessCodeVerificationScreen> createState() =>
-      _AccessCodeVerificationScreenState();
+  State<PinVerifyScreen> createState() => _PinVerifyScreenState();
 }
 
-class _AccessCodeVerificationScreenState
-    extends State<AccessCodeVerificationScreen> with TickerProviderStateMixin {
+class _PinVerifyScreenState extends State<PinVerifyScreen> with TickerProviderStateMixin {
   final List<TextEditingController> _controllers =
       List.generate(4, (index) => TextEditingController());
   final List<FocusNode> _focusNodes = List.generate(4, (index) => FocusNode());
@@ -40,7 +40,7 @@ class _AccessCodeVerificationScreenState
     _shakeAnimation = Tween<double>(begin: 0, end: 8).animate(
         CurvedAnimation(parent: _shakeController, curve: Curves.elasticIn));
 
-    // Auto-focus en el primer campo
+    // Auto-focus on first field
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _focusNodes[0].requestFocus();
     });
@@ -67,7 +67,7 @@ class _AccessCodeVerificationScreenState
       _focusNodes[index + 1].requestFocus();
     }
 
-    // Auto-verificar cuando se completen los 4 dígitos
+    // Auto-verify when all 4 digits are entered
     if (_getCurrentInputCode().length == 4) {
       _verifyCode();
     }
@@ -103,11 +103,11 @@ class _AccessCodeVerificationScreenState
       final isCorrect = await AccessCodeService.verifyAccessCode(code);
 
       if (isCorrect) {
-        // Código correcto - marcar como logueado
+        // Correct code - mark as logged in
         await AccessCodeService.setLoginState(true);
 
         if (mounted) {
-          // Si hay callback, llamarlo en lugar de hacer pop
+          // Call callback if provided instead of popping
           if (widget.onVerificationSuccess != null) {
             widget.onVerificationSuccess!();
           } else {
@@ -115,21 +115,21 @@ class _AccessCodeVerificationScreenState
           }
         }
       } else {
-        // Código incorrecto
+        // Incorrect code
         _attempts++;
 
         if (_attempts >= _maxAttempts) {
-          // Máximo de intentos alcanzado
+          // Max attempts reached
           if (mounted) {
             if (widget.canCancel) {
               Navigator.of(context).pop(false);
             } else {
-              // Si no se puede cancelar, cerrar la aplicación
+              // Cannot cancel - close the app
               SystemNavigator.pop();
             }
           }
         } else {
-          // Mostrar error y limpiar
+          // Show error and clear
           _performShakeAnimation();
           _clearCode();
 
@@ -137,7 +137,7 @@ class _AccessCodeVerificationScreenState
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
-                  'Código incorrecto. Intentos restantes: ${_maxAttempts - _attempts}',
+                  'Incorrect PIN. Attempts remaining: ${_maxAttempts - _attempts}',
                 ),
                 backgroundColor: Colors.red,
               ),
@@ -149,7 +149,7 @@ class _AccessCodeVerificationScreenState
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error al verificar código: $e'),
+            content: Text('Error verifying PIN: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -174,15 +174,15 @@ class _AccessCodeVerificationScreenState
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('¿Olvidaste tu código?'),
+          title: const Text('Forgot your PIN?'),
           content: const Text(
-            'Para restablecer tu código de acceso, deberás eliminar y reinstalar la aplicación. '
-            'Ten en cuenta que esto eliminará todos tus datos.',
+            'To reset your access code, you will need to uninstall and reinstall the app. '
+            'Please note that this will delete all your data.',
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Entendido'),
+              child: const Text('Got it'),
             ),
           ],
         );
@@ -195,7 +195,7 @@ class _AccessCodeVerificationScreenState
     return Scaffold(
       appBar: widget.canCancel
           ? AppBar(
-              title: const Text('Verificar Código'),
+              title: const Text('Verify PIN'),
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back),
                 onPressed: () => Navigator.of(context).pop(),
@@ -221,28 +221,28 @@ class _AccessCodeVerificationScreenState
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.lock,
                         size: 80,
-                        color: Color(0xFF007C91),
+                        color: const Color(0xFF7B2D8E), // Purple
                       ),
                       const SizedBox(height: 32),
                       Text(
                         widget.canCancel
-                            ? 'Ingresa tu código de acceso'
-                            : 'Aplicación Bloqueada',
+                            ? 'Enter your access code'
+                            : 'App Locked',
                         style:
                             Theme.of(context).textTheme.headlineSmall?.copyWith(
                                   fontWeight: FontWeight.bold,
-                                  color: const Color(0xFF007C91),
+                                  color: const Color(0xFF7B2D8E), // Purple
                                 ),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 16),
                       Text(
                         widget.canCancel
-                            ? 'Introduce tu código de 4 dígitos para acceder'
-                            : 'Introduce tu PIN para desbloquear la aplicación',
+                            ? 'Enter your 4-digit code to continue'
+                            : 'Enter your PIN to unlock the app',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               color: Colors.grey[600],
                             ),
@@ -259,7 +259,7 @@ class _AccessCodeVerificationScreenState
                             border: Border.all(color: Colors.red[200]!),
                           ),
                           child: Text(
-                            'Intentos restantes: ${_maxAttempts - _attempts}',
+                            'Attempts remaining: ${_maxAttempts - _attempts}',
                             style: TextStyle(
                               color: Colors.red[600],
                               fontWeight: FontWeight.bold,
@@ -298,7 +298,7 @@ class _AccessCodeVerificationScreenState
                                   borderSide: BorderSide(
                                     color: _attempts > 0
                                         ? Colors.red
-                                        : Theme.of(context).primaryColor,
+                                        : const Color(0xFF7B2D8E), // Purple
                                     width: 2,
                                   ),
                                 ),
@@ -339,19 +339,20 @@ class _AccessCodeVerificationScreenState
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
+                                backgroundColor: const Color(0xFF7B2D8E), // Purple
                               ),
-                              child: const Text('Verificar'),
+                              child: const Text('Verify'),
                             ),
                             const SizedBox(height: 16),
                             TextButton(
                               onPressed: _clearCode,
-                              child: const Text('Limpiar'),
+                              child: const Text('Clear'),
                             ),
                             const SizedBox(height: 8),
                             TextButton(
                               onPressed: _showForgotCodeDialog,
                               child: Text(
-                                '¿Olvidaste tu código?',
+                                'Forgot your PIN?',
                                 style: TextStyle(
                                   color: Colors.grey[600],
                                   fontSize: 12,

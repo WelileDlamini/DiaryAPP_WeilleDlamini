@@ -1,9 +1,11 @@
+
+import 'package:diary/screens/statistics_screen.dart';
 import 'package:flutter/material.dart';
 import '../components/bottom_nav.dart';
 import 'create_note_screen.dart';
 import 'note_view_screen.dart';
 import '../main.dart';
-import '../services/database_service.dart.dart';
+import '../services/database_service.dart';
 import '../models/diary_entry_isar.dart';
 
 class NotesScreen extends StatefulWidget {
@@ -19,21 +21,20 @@ class _NotesScreenState extends State<NotesScreen> {
   bool _isLoading = true;
   List<DiaryEntry> _entries = [];
   List<DiaryEntry> _filteredEntries = [];
-  String _selectedFilter = 'Todas';
+  String _selectedFilter = 'All';
   Map<String, int> _stats = {'total': 0, 'favorites': 0, 'thisMonth': 0};
   bool _isSearching = false;
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
 
-  // Variables para ordenamiento
-  String _sortBy = 'date'; // 'date' o 'title'
-  bool _sortAscending =
-      false; // false = descendente por defecto (más reciente primero)
+  // Sorting variables
+  String _sortBy = 'date'; // 'date' or 'title'
+  bool _sortAscending = false; // false = descending (newest first)
 
   @override
   void initState() {
     super.initState();
-    // Aplicar filtro inicial si se proporcionó
+    // Apply initial filter if provided
     if (widget.initialFilter != null) {
       _selectedFilter = widget.initialFilter!;
     }
@@ -73,7 +74,7 @@ class _NotesScreenState extends State<NotesScreen> {
       final entries = await DatabaseService.instance.getAllEntries();
       final stats = await DatabaseService.instance.getStatistics();
 
-      // Calcular entradas de este mes
+      // Calculate entries from this month
       final now = DateTime.now();
       final thisMonthEntries = entries
           .where((entry) =>
@@ -90,7 +91,7 @@ class _NotesScreenState extends State<NotesScreen> {
           };
           _isLoading = false;
         });
-        _applyCurrentFilter(); // Aplicar filtros después de cargar
+        _applyCurrentFilter();
       }
     } catch (e) {
       if (mounted) {
@@ -110,10 +111,9 @@ class _NotesScreenState extends State<NotesScreen> {
       _applyCurrentFilter();
     });
 
-    // Debug: Mostrar cuántas entradas se filtraron
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Filtro "$filter": ${_filteredEntries.length} entradas'),
+        content: Text('Filter "$filter": ${_filteredEntries.length} entries'),
         duration: const Duration(seconds: 1),
       ),
     );
@@ -122,21 +122,21 @@ class _NotesScreenState extends State<NotesScreen> {
   void _applyCurrentFilter() {
     List<DiaryEntry> filtered = [];
 
-    // Aplicar filtro de categoría
+    // Apply category filter
     switch (_selectedFilter) {
-      case 'Favoritas':
+      case 'Favorites':
         filtered = _entries.where((entry) => entry.isFavorite).toList();
         break;
-      case 'Recientes':
+      case 'Recent':
         final recentDate = DateTime.now().subtract(const Duration(days: 10));
         filtered =
             _entries.where((entry) => entry.date.isAfter(recentDate)).toList();
         break;
-      default: // 'Todas'
+      default: // 'All'
         filtered = _entries;
     }
 
-    // Aplicar filtro de búsqueda si existe
+    // Apply search filter if exists
     if (_searchQuery.isNotEmpty) {
       filtered = filtered
           .where((entry) =>
@@ -146,7 +146,7 @@ class _NotesScreenState extends State<NotesScreen> {
           .toList();
     }
 
-    // Aplicar ordenamiento
+    // Apply sorting
     _applySorting(filtered);
 
     _filteredEntries = filtered;
@@ -172,12 +172,12 @@ class _NotesScreenState extends State<NotesScreen> {
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
-              title: const Text('Ordenar por'),
+              title: const Text('Sort by'),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   RadioListTile<String>(
-                    title: const Text('Fecha'),
+                    title: const Text('Date'),
                     value: 'date',
                     groupValue: _sortBy,
                     onChanged: (value) {
@@ -187,7 +187,7 @@ class _NotesScreenState extends State<NotesScreen> {
                     },
                   ),
                   RadioListTile<String>(
-                    title: const Text('Título (A-Z)'),
+                    title: const Text('Title (A-Z)'),
                     value: 'title',
                     groupValue: _sortBy,
                     onChanged: (value) {
@@ -199,7 +199,7 @@ class _NotesScreenState extends State<NotesScreen> {
                   const Divider(),
                   SwitchListTile(
                     title: Text(
-                        _sortBy == 'date' ? 'Más antiguos primero' : 'Z-A'),
+                        _sortBy == 'date' ? 'Oldest first' : 'Z-A'),
                     value: _sortAscending,
                     onChanged: (value) {
                       setDialogState(() {
@@ -212,7 +212,7 @@ class _NotesScreenState extends State<NotesScreen> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('Cancelar'),
+                  child: const Text('Cancel'),
                 ),
                 ElevatedButton(
                   onPressed: () {
@@ -223,13 +223,13 @@ class _NotesScreenState extends State<NotesScreen> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
-                            'Ordenado por ${_sortBy == 'date' ? 'fecha' : 'título'} '
-                            '(${_sortAscending ? 'ascendente' : 'descendente'})'),
+                            'Sorted by ${_sortBy == 'date' ? 'date' : 'title'} '
+                            '(${_sortAscending ? 'ascending' : 'descending'})'),
                         duration: const Duration(seconds: 2),
                       ),
                     );
                   },
-                  child: const Text('Aplicar'),
+                  child: const Text('Apply'),
                 ),
               ],
             );
@@ -242,17 +242,17 @@ class _NotesScreenState extends State<NotesScreen> {
   Future<void> _toggleFavorite(int entryId) async {
     try {
       await DatabaseService.instance.toggleFavorite(entryId);
-      _loadEntries(); // Recargar para actualizar la UI y mantener filtros
+      _loadEntries();
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error al actualizar favorito: $e')),
+          SnackBar(content: Text('Error updating favorite: $e')),
         );
       }
     }
   }
 
-  Future<void> _editNote(DiaryEntry entry) async {
+  Future<void> _editEntry(DiaryEntry entry) async {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -269,7 +269,6 @@ class _NotesScreenState extends State<NotesScreen> {
       ),
     );
 
-    // Si se editó la nota, recargar la lista
     if (result == true) {
       _loadEntries();
     }
@@ -277,18 +276,8 @@ class _NotesScreenState extends State<NotesScreen> {
 
   String _formatDate(DateTime date) {
     final months = [
-      'Ene',
-      'Feb',
-      'Mar',
-      'Abr',
-      'May',
-      'Jun',
-      'Jul',
-      'Ago',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dic'
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
     ];
     return "${date.day} ${months[date.month - 1]} ${date.year}";
   }
@@ -297,25 +286,25 @@ class _NotesScreenState extends State<NotesScreen> {
     final isDark = DiaryApp.appKey.currentState?.isDarkMode ?? false;
 
     if (isDark) {
-      // Colores oscuros semi-transparentes para modo oscuro
+      // Semi-transparent dark colors for dark mode
       final darkColors = [
-        const Color(0xFF424242).withOpacity(0.5), // Gris oscuro
-        const Color(0xFF37474F).withOpacity(0.5), // Azul gris oscuro
-        const Color(0xFF263238).withOpacity(0.5), // Azul gris muy oscuro
-        const Color(0xFF3E2723).withOpacity(0.5), // Marrón oscuro
-        const Color(0xFF1A237E).withOpacity(0.5), // Azul oscuro
-        const Color(0xFF004D40).withOpacity(0.5), // Verde azulado oscuro
+        const Color(0xFF424242).withOpacity(0.5),
+        const Color(0xFF37474F).withOpacity(0.5),
+        const Color(0xFF263238).withOpacity(0.5),
+        const Color(0xFF3E2723).withOpacity(0.5),
+        const Color(0xFF1A237E).withOpacity(0.5),
+        const Color(0xFF004D40).withOpacity(0.5),
       ];
       return darkColors[index % darkColors.length];
     } else {
-      // Colores claros para modo claro
+      // Light colors for light mode
       final lightColors = [
-        const Color(0xFFFFF3CD), // Amarillo claro
-        const Color(0xFFE8F5E8), // Verde claro
-        const Color(0xFFE3F2FD), // Azul claro
-        const Color(0xFFFCE4EC), // Rosa claro
-        const Color(0xFFF3E5F5), // Púrpura claro
-        const Color(0xFFE0F2F1), // Verde azulado claro
+        const Color(0xFFFFF3CD),
+        const Color(0xFFE8F5E8),
+        const Color(0xFFE3F2FD),
+        const Color(0xFFFCE4EC),
+        const Color(0xFFF3E5F5),
+        const Color(0xFFE0F2F1),
       ];
       return lightColors[index % lightColors.length];
     }
@@ -323,7 +312,6 @@ class _NotesScreenState extends State<NotesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Forzar dependencia del tema para que se reconstruya cuando cambie
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -331,24 +319,26 @@ class _NotesScreenState extends State<NotesScreen> {
       appBar: AppBar(
         leading: Padding(
           padding: const EdgeInsets.only(left: 8.0),
-          child: Icon(Icons.favorite, color: Color(0xFF007C91)),
+          child: Icon(Icons.favorite, color: const Color(0xFF7B2D8E)), // Purple
         ),
         title: _isSearching
             ? TextField(
                 controller: _searchController,
                 autofocus: true,
                 decoration: const InputDecoration(
-                  hintText: 'Buscar en notas...',
+                  hintText: 'Search entries...',
                   border: InputBorder.none,
                   hintStyle: TextStyle(color: Colors.grey),
                 ),
                 style: const TextStyle(fontSize: 16),
               )
-            : const Text('Mis Notas',
+            : const Text(
+                'My Diary',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
-                )),
+                ),
+              ),
         actions: [
           IconButton(
               icon: Icon(_isSearching ? Icons.close : Icons.search, size: 28),
@@ -373,7 +363,7 @@ class _NotesScreenState extends State<NotesScreen> {
           ? const Center(child: CircularProgressIndicator())
           : Column(
               children: [
-                // Header Stats
+                // Header Statistics
                 Container(
                   margin: const EdgeInsets.all(16),
                   padding: const EdgeInsets.all(20),
@@ -381,8 +371,8 @@ class _NotesScreenState extends State<NotesScreen> {
                     borderRadius: BorderRadius.circular(16),
                     gradient: LinearGradient(
                       colors: [
-                        const Color(0xFFc6e6f7).withOpacity(0.8),
-                        const Color(0xFFeaf6fa).withOpacity(0.8)
+                        const Color(0xFF7B2D8E).withOpacity(0.1), // Purple light
+                        const Color(0xFF9C27B0).withOpacity(0.05),
                       ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -394,20 +384,20 @@ class _NotesScreenState extends State<NotesScreen> {
                       _StatCard(
                         icon: Icons.note_outlined,
                         count: '${_stats['total']}',
-                        label: 'Notas',
-                        color: Color(0xFF007C91),
+                        label: 'Entries',
+                        color: const Color(0xFF7B2D8E), // Purple
                       ),
                       _StatCard(
                         icon: Icons.favorite_border,
                         count: '${_stats['favorites']}',
-                        label: 'Favoritas',
-                        color: Color(0xFF4F8CFF),
+                        label: 'Favorites',
+                        color: const Color(0xFFE91E63), // Pink
                       ),
                       _StatCard(
                         icon: Icons.calendar_today,
                         count: '${_stats['thisMonth']}',
-                        label: 'Este mes',
-                        color: Color(0xFF007C91),
+                        label: 'This Month',
+                        color: const Color(0xFF7B2D8E), // Purple
                       ),
                     ],
                   ),
@@ -420,21 +410,21 @@ class _NotesScreenState extends State<NotesScreen> {
                   child: ListView(
                     scrollDirection: Axis.horizontal,
                     children: [
-                      _FilterChip('Todas', _selectedFilter == 'Todas',
-                          () => _applyFilter('Todas')),
+                      _FilterChip('All', _selectedFilter == 'All',
+                          () => _applyFilter('All')),
                       const SizedBox(width: 8),
-                      _FilterChip('Favoritas', _selectedFilter == 'Favoritas',
-                          () => _applyFilter('Favoritas')),
+                      _FilterChip('Favorites', _selectedFilter == 'Favorites',
+                          () => _applyFilter('Favorites')),
                       const SizedBox(width: 8),
-                      _FilterChip('Recientes', _selectedFilter == 'Recientes',
-                          () => _applyFilter('Recientes')),
+                      _FilterChip('Recent', _selectedFilter == 'Recent',
+                          () => _applyFilter('Recent')),
                     ],
                   ),
                 ),
 
                 const SizedBox(height: 16),
 
-                // Notes List
+                // Entries List
                 Expanded(
                   child: _filteredEntries.isEmpty
                       ? Center(
@@ -448,9 +438,9 @@ class _NotesScreenState extends State<NotesScreen> {
                               ),
                               const SizedBox(height: 16),
                               Text(
-                                _selectedFilter == 'Todas'
-                                    ? 'No hay entradas aún'
-                                    : 'No hay entradas en "$_selectedFilter"',
+                                _selectedFilter == 'All'
+                                    ? 'No entries yet'
+                                    : 'No entries in "$_selectedFilter"',
                                 style: TextStyle(
                                   fontSize: 18,
                                   color: Colors.grey[600],
@@ -458,9 +448,9 @@ class _NotesScreenState extends State<NotesScreen> {
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                _selectedFilter == 'Todas'
-                                    ? 'Crea tu primera entrada del diario'
-                                    : 'Prueba con otro filtro',
+                                _selectedFilter == 'All'
+                                    ? 'Create your first diary entry'
+                                    : 'Try another filter',
                                 style: TextStyle(
                                   fontSize: 14,
                                   color: Colors.grey[500],
@@ -476,7 +466,6 @@ class _NotesScreenState extends State<NotesScreen> {
                             final entry = _filteredEntries[index];
                             return GestureDetector(
                               onTap: () async {
-                                // Navegar a la pantalla de vista previa
                                 final result = await Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -486,7 +475,6 @@ class _NotesScreenState extends State<NotesScreen> {
                                   ),
                                 );
 
-                                // Si se editó o eliminó la nota, recargar la lista
                                 if (result == true) {
                                   _loadEntries();
                                 }
@@ -500,7 +488,7 @@ class _NotesScreenState extends State<NotesScreen> {
                                 tags: entry.tags,
                                 onFavoriteToggle: () =>
                                     _toggleFavorite(entry.id),
-                                onEdit: () => _editNote(entry),
+                                onEdit: () => _editEntry(entry),
                               ),
                             );
                           },
@@ -514,18 +502,18 @@ class _NotesScreenState extends State<NotesScreen> {
             context,
             MaterialPageRoute(builder: (context) => const CreateNoteScreen()),
           );
-          // Si se creó una nueva entrada, recargar la lista
           if (result == true) {
             _loadEntries();
           }
         },
-        backgroundColor: const Color(0xFF4F8CFF),
+        backgroundColor: const Color(0xFF7B2D8E), // Purple
         child: const Icon(Icons.add, color: Colors.white, size: 28),
       ),
       bottomNavigationBar: const BottomNav(currentIndex: 1),
     );
   }
 }
+
 
 class _StatCard extends StatelessWidget {
   final IconData icon;
@@ -580,6 +568,7 @@ class _StatCard extends StatelessWidget {
   }
 }
 
+
 class _FilterChip extends StatelessWidget {
   final String label;
   final bool isSelected;
@@ -597,12 +586,12 @@ class _FilterChip extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected
-              ? const Color(0xFF007C91)
-              : Colors.transparent, // Transparente cuando no está seleccionado
+              ? const Color(0xFF7B2D8E) // Purple
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: isSelected
-                ? const Color(0xFF007C91)
+                ? const Color(0xFF7B2D8E) // Purple
                 : (isDark ? Colors.white.withOpacity(0.5) : Colors.grey[400]!),
             width: 1.5,
           ),
@@ -620,6 +609,7 @@ class _FilterChip extends StatelessWidget {
     );
   }
 }
+
 
 class _NoteCard extends StatelessWidget {
   final String title;
@@ -755,7 +745,7 @@ class _NoteCard extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.only(top: 2),
                           child: Text(
-                            '+${tags.length - 3} más',
+                            '+${tags.length - 3} more',
                             style: TextStyle(
                               fontSize: 10,
                               color: isDark

@@ -1,7 +1,12 @@
+// Developer: Welile Dlamini
+// Course: Mobile App Final Project (CS441)
+
+
+import 'package:diary/screens/statistics_screen.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import '../main.dart';
-import '../services/database_service.dart.dart';
+import '../services/database_service.dart';
 import '../services/media_service.dart';
 import '../models/diary_entry_isar.dart';
 
@@ -32,10 +37,12 @@ class CreateNoteScreen extends StatefulWidget {
 }
 
 class _CreateNoteScreenState extends State<CreateNoteScreen> {
+  // Controllers for text inputs
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
   final TextEditingController _newTagController = TextEditingController();
 
+  // Entry data
   DateTime selectedDate = DateTime.now();
   List<String> selectedTags = [];
   List<String> attachedImages = [];
@@ -46,22 +53,24 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   bool isPlayingAudio = false;
   int currentPlayingIndex = -1;
 
+  // Available tags for users to choose from
   final List<String> predefinedTags = [
     'Personal',
-    'Trabajo',
-    'Viaje',
-    'Familia',
-    'Estudio',
-    'Salud',
-    'Reflexiones',
+    'Work',
+    'Travel',
+    'Family',
+    'Study',
+    'Health',
+    'Reflections',
     'Ideas',
-    'Metas',
-    'Recuerdos'
+    'Goals',
+    'Memories'
   ];
 
   @override
   void initState() {
     super.initState();
+    // Load existing data when editing
     if (widget.isEditing) {
       _titleController.text = widget.noteTitle ?? '';
       _contentController.text = widget.noteContent ?? '';
@@ -81,7 +90,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          widget.isEditing ? 'Editar entrada' : 'Nueva entrada',
+          widget.isEditing ? 'Edit Entry' : 'New Entry',
           style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -105,27 +114,27 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Date Picker
+            // Date picker section
             _buildDateSection(),
             const SizedBox(height: 24),
 
-            // Title Input
+            // Title input section
             _buildTitleSection(),
             const SizedBox(height: 24),
 
-            // Content Input
+            // Content input section
             _buildContentSection(),
             const SizedBox(height: 24),
 
-            // Tags Section
+            // Tags section
             _buildTagsSection(),
             const SizedBox(height: 24),
 
-            // Attachments Section
+            // Attachments section (images & audio)
             _buildAttachmentsSection(),
             const SizedBox(height: 32),
 
-            // Save Button
+            // Save button
             _buildSaveButton(),
             const SizedBox(height: 32),
           ],
@@ -134,12 +143,13 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     );
   }
 
+  
   Widget _buildDateSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Fecha',
+          'Date',
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
@@ -179,12 +189,13 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     );
   }
 
+  
   Widget _buildTitleSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Título',
+          'Title',
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
@@ -195,7 +206,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
         TextField(
           controller: _titleController,
           decoration: InputDecoration(
-            hintText: 'Título de tu entrada',
+            hintText: 'Entry title...',
             filled: true,
             fillColor: Theme.of(context).inputDecorationTheme.fillColor ??
                 (Theme.of(context).brightness == Brightness.dark
@@ -209,7 +220,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: Color(0xFF007C91)),
+              borderSide: const BorderSide(color: Color(0xFF7B2D8E)), // Purple
             ),
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -219,12 +230,13 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     );
   }
 
+ 
   Widget _buildContentSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Contenido',
+          'Content',
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
@@ -236,7 +248,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
           controller: _contentController,
           maxLines: 8,
           decoration: InputDecoration(
-            hintText: 'Escribe aquí tus pensamientos...',
+            hintText: 'Write your thoughts here...',
             filled: true,
             fillColor: Theme.of(context).inputDecorationTheme.fillColor ??
                 (Theme.of(context).brightness == Brightness.dark
@@ -250,7 +262,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: const BorderSide(color: Color(0xFF007C91)),
+              borderSide: const BorderSide(color: Color(0xFF7B2D8E)), // Purple
             ),
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -260,12 +272,13 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     );
   }
 
+
   Widget _buildTagsSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Etiquetas',
+          'Tags',
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
@@ -274,7 +287,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
         ),
         const SizedBox(height: 12),
 
-        // Selected Tags
+        // Display selected tags
         if (selectedTags.isNotEmpty)
           Wrap(
             spacing: 8,
@@ -285,7 +298,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
 
         const SizedBox(height: 12),
 
-        // Predefined Tags
+        // Display available tags to add
         Wrap(
           spacing: 8,
           runSpacing: 8,
@@ -297,14 +310,14 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
 
         const SizedBox(height: 12),
 
-        // Add Custom Tag
+        // Add custom tag input
         Row(
           children: [
             Expanded(
               child: TextField(
                 controller: _newTagController,
                 decoration: InputDecoration(
-                  hintText: 'Crear nueva etiqueta',
+                  hintText: 'Create new tag',
                   filled: true,
                   fillColor: Theme.of(context).brightness == Brightness.dark
                       ? Colors.grey[800]
@@ -316,7 +329,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(20),
-                    borderSide: const BorderSide(color: Color(0xFF007C91)),
+                    borderSide: const BorderSide(color: Color(0xFF7B2D8E)), // Purple
                   ),
                   contentPadding:
                       const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -330,7 +343,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
               child: Container(
                 padding: const EdgeInsets.all(8),
                 decoration: const BoxDecoration(
-                  color: Color(0xFF007C91),
+                  color: Color(0xFF7B2D8E), // Purple
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
@@ -346,11 +359,12 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     );
   }
 
+  // Selected tag chip widget
   Widget _buildSelectedTag(String tag) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: const Color(0xFF007C91),
+        color: const Color(0xFF7B2D8E), // Purple
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
@@ -378,6 +392,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     );
   }
 
+  // Available tag chip widget
   Widget _buildAvailableTag(String tag) {
     return GestureDetector(
       onTap: () => _addTag(tag),
@@ -400,12 +415,13 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     );
   }
 
+
   Widget _buildAttachmentsSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Imagen',
+          'Attachments',
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
@@ -418,7 +434,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
             Expanded(
               child: _buildAttachmentButton(
                 icon: Icons.image_outlined,
-                label: 'Adjuntar Imagen',
+                label: 'Add Image',
                 onTap: _attachImage,
               ),
             ),
@@ -426,7 +442,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
             Expanded(
               child: _buildAttachmentButton(
                 icon: isRecording ? Icons.stop : Icons.mic_outlined,
-                label: isRecording ? 'Detener grabación' : 'Adjuntar Audio',
+                label: isRecording ? 'Stop Recording' : 'Add Audio',
                 onTap: _attachAudio,
                 isActive: isRecording,
               ),
@@ -434,22 +450,22 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
           ],
         ),
 
-        // Show attached files
+        // Display attached files
         if (attachedImages.isNotEmpty || attachedAudios.isNotEmpty)
           Container(
             margin: const EdgeInsets.only(top: 12),
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.blue[50],
+              color: Colors.purple[50],
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.blue[200]!),
+              border: Border.all(color: Colors.purple[200]!),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (attachedImages.isNotEmpty) ...[
                   const Text(
-                    'Imágenes adjuntas:',
+                    'Attached Images:',
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -519,7 +535,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                 ],
                 if (attachedAudios.isNotEmpty) ...[
                   const Text(
-                    'Audios adjuntos:',
+                    'Attached Audio:',
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -545,7 +561,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                           children: [
                             Icon(
                               Icons.audiotrack,
-                              color: Color(0xFF007C91),
+                              color: const Color(0xFF7B2D8E), // Purple
                               size: 20,
                             ),
                             const SizedBox(width: 8),
@@ -564,7 +580,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
                                 isPlayingAudio && currentPlayingIndex == index
                                     ? Icons.pause_circle
                                     : Icons.play_circle,
-                                color: Color(0xFF007C91),
+                                color: const Color(0xFF7B2D8E), // Purple
                               ),
                               onPressed: () =>
                                   _toggleAudioPlayback(index, audioPath),
@@ -589,6 +605,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     );
   }
 
+  // Attachment button widget
   Widget _buildAttachmentButton({
     required IconData icon,
     required String label,
@@ -612,7 +629,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
         child: Row(
           children: [
             Icon(icon,
-                color: isActive ? Colors.red : const Color(0xFF007C91),
+                color: isActive ? Colors.red : const Color(0xFF7B2D8E), // Purple
                 size: 20),
             const SizedBox(width: 8),
             Expanded(
@@ -633,13 +650,14 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     );
   }
 
+
   Widget _buildSaveButton() {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
         onPressed: _saveNote,
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF007C91),
+          backgroundColor: const Color(0xFF7B2D8E), // Purple
           padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
@@ -647,7 +665,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
           elevation: 0,
         ),
         child: Text(
-          widget.isEditing ? 'Actualizar entrada' : 'Guardar entrada',
+          widget.isEditing ? 'Update Entry' : 'Save Entry',
           style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
@@ -658,6 +676,8 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     );
   }
 
+ 
+  // Open date picker
   Future<void> _selectDate() async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -668,7 +688,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: const ColorScheme.light(
-              primary: Color(0xFF007C91),
+              primary: Color(0xFF7B2D8E), // Purple
             ),
           ),
           child: child!,
@@ -682,10 +702,12 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     }
   }
 
+  // Format date for display
   String _formatDate(DateTime date) {
     return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
   }
 
+  // Add a tag
   void _addTag(String tag) {
     if (!selectedTags.contains(tag)) {
       setState(() {
@@ -694,12 +716,14 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     }
   }
 
+  // Remove a tag
   void _removeTag(String tag) {
     setState(() {
       selectedTags.remove(tag);
     });
   }
 
+  // Add a custom tag
   void _addCustomTag() {
     final tag = _newTagController.text.trim();
     if (tag.isNotEmpty && !selectedTags.contains(tag)) {
@@ -710,6 +734,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     }
   }
 
+  // Show image source dialog (camera or gallery)
   void _attachImage() {
     _showImageSourceDialog();
   }
@@ -719,13 +744,13 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Seleccionar imagen'),
+          title: const Text('Select Image Source'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
                 leading: const Icon(Icons.camera_alt),
-                title: const Text('Tomar foto'),
+                title: const Text('Take Photo'),
                 onTap: () {
                   Navigator.of(context).pop();
                   _pickImageFromCamera();
@@ -733,7 +758,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
               ),
               ListTile(
                 leading: const Icon(Icons.photo_library),
-                title: const Text('Seleccionar de galería'),
+                title: const Text('Choose from Gallery'),
                 onTap: () {
                   Navigator.of(context).pop();
                   _pickImageFromGallery();
@@ -746,6 +771,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     );
   }
 
+  // Pick image from camera
   Future<void> _pickImageFromCamera() async {
     try {
       final String? imagePath = await MediaService().takePhoto();
@@ -754,16 +780,17 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
           attachedImages.add(imagePath);
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Foto agregada correctamente')),
+          const SnackBar(content: Text('Photo added successfully')),
         );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al tomar foto: $e')),
+        SnackBar(content: Text('Error taking photo: $e')),
       );
     }
   }
 
+  // Pick image from gallery
   Future<void> _pickImageFromGallery() async {
     try {
       final String? imagePath = await MediaService().pickImageFromGallery();
@@ -772,25 +799,27 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
           attachedImages.add(imagePath);
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Imagen agregada correctamente')),
+          const SnackBar(content: Text('Image added successfully')),
         );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al seleccionar imagen: $e')),
+        SnackBar(content: Text('Error selecting image: $e')),
       );
     }
   }
 
+  // Remove attached image
   void _removeImage(int index) {
     setState(() {
       attachedImages.removeAt(index);
     });
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Imagen eliminada')),
+      const SnackBar(content: Text('Image removed')),
     );
   }
 
+  // Show audio source dialog
   void _attachAudio() {
     _showAudioSourceDialog();
   }
@@ -800,17 +829,17 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Adjuntar audio'),
+          title: const Text('Add Audio'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
                 leading: Icon(
                   isRecording ? Icons.stop : Icons.mic,
-                  color: isRecording ? Colors.red : Color(0xFF007C91),
+                  color: isRecording ? Colors.red : const Color(0xFF7B2D8E), // Purple
                 ),
                 title: Text(
-                  isRecording ? 'Detener grabación' : 'Grabar audio',
+                  isRecording ? 'Stop Recording' : 'Record Audio',
                 ),
                 onTap: () {
                   Navigator.of(context).pop();
@@ -828,6 +857,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     );
   }
 
+  // Start audio recording
   Future<void> _startRecording() async {
     try {
       final bool hasPermission =
@@ -835,7 +865,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       if (!hasPermission) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Se requiere permiso de micrófono para grabar audio'),
+            content: Text('Microphone permission is required to record audio'),
             backgroundColor: Colors.red,
           ),
         );
@@ -849,8 +879,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
         });
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text(
-                'Grabación iniciada. Toca el botón de audio para detener.'),
+            content: Text('Recording started. Tap audio button to stop.'),
             backgroundColor: Colors.green,
           ),
         );
@@ -858,13 +887,14 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error al iniciar grabación: $e'),
+          content: Text('Error starting recording: $e'),
           backgroundColor: Colors.red,
         ),
       );
     }
   }
 
+  // Stop audio recording
   Future<void> _stopRecording() async {
     try {
       final String? audioPath = await MediaService().stopRecording();
@@ -875,7 +905,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
         });
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Grabación guardada exitosamente'),
+            content: Text('Recording saved successfully'),
             backgroundColor: Colors.green,
           ),
         );
@@ -886,29 +916,30 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error al detener grabación: $e'),
+          content: Text('Error stopping recording: $e'),
           backgroundColor: Colors.red,
         ),
       );
     }
   }
 
+  // Toggle audio playback
   Future<void> _toggleAudioPlayback(int index, String audioPath) async {
     try {
       if (isPlayingAudio && currentPlayingIndex == index) {
-        // Pausar audio actual
+        // Pause current audio
         await MediaService().pauseAudio();
         setState(() {
           isPlayingAudio = false;
           currentPlayingIndex = -1;
         });
       } else {
-        // Detener cualquier audio que esté reproduciéndose
+        // Stop any currently playing audio
         if (isPlayingAudio) {
           await MediaService().stopAudio();
         }
 
-        // Reproducir nuevo audio
+        // Play new audio
         final bool playbackStarted = await MediaService().playAudio(audioPath);
         if (playbackStarted) {
           setState(() {
@@ -916,22 +947,22 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
             currentPlayingIndex = index;
           });
 
-          // Crear un timer para verificar cuando termine la reproducción
+          // Check when playback completes
           _checkAudioCompletion();
         }
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error en reproducción de audio: $e'),
+          content: Text('Audio playback error: $e'),
           backgroundColor: Colors.red,
         ),
       );
     }
   }
 
+  // Check if audio is still playing
   void _checkAudioCompletion() {
-    // Verificar periódicamente si el audio sigue reproduciéndose
     Future.delayed(const Duration(milliseconds: 500), () {
       if (mounted && isPlayingAudio) {
         if (!MediaService().isPlaying) {
@@ -940,12 +971,13 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
             currentPlayingIndex = -1;
           });
         } else {
-          _checkAudioCompletion(); // Continuar verificando
+          _checkAudioCompletion(); // Continue checking
         }
       }
     });
   }
 
+  // Remove attached audio
   void _removeAudio(int index) {
     setState(() {
       if (currentPlayingIndex == index && isPlayingAudio) {
@@ -956,16 +988,17 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       attachedAudios.removeAt(index);
     });
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Audio eliminado')),
+      const SnackBar(content: Text('Audio removed')),
     );
   }
 
+  // Save entry to database
   Future<void> _saveNote() async {
     if (_titleController.text.trim().isEmpty ||
         _contentController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Por favor completa el título y contenido'),
+          content: Text('Please fill in both title and content'),
           backgroundColor: Colors.red,
         ),
       );
@@ -974,7 +1007,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
 
     try {
       if (widget.isEditing && widget.entryId != null) {
-        // Modo edición: actualizar entrada existente
+        // Edit mode: update existing entry
         final entry = DiaryEntry(
           date: selectedDate,
           title: _titleController.text.trim(),
@@ -982,24 +1015,22 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
           tags: selectedTags,
           attachedImages: attachedImages,
           attachedAudios: attachedAudios,
-          isFavorite: false, // Mantener el estado actual de favorito
+          isFavorite: false,
         );
 
-        // Para editar en Isar, necesitamos mantener el ID existente
         entry.id = widget.entryId!;
-
         await DatabaseService.instance.updateEntry(entry);
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Entrada actualizada exitosamente'),
+              content: Text('Entry updated successfully'),
               backgroundColor: Colors.green,
             ),
           );
         }
       } else {
-        // Modo creación: crear nueva entrada
+        // Create mode: create new entry
         final entry = DiaryEntry(
           date: selectedDate,
           title: _titleController.text.trim(),
@@ -1015,7 +1046,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Entrada guardada exitosamente'),
+              content: Text('Entry saved successfully'),
               backgroundColor: Colors.green,
             ),
           );
@@ -1023,13 +1054,13 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       }
 
       if (mounted) {
-        Navigator.pop(context, true); // Retorna true para indicar que se guardó
+        Navigator.pop(context, true);
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error al guardar: $e'),
+            content: Text('Error saving entry: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -1039,11 +1070,12 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
 
   @override
   void dispose() {
+    // Clean up controllers
     _titleController.dispose();
     _contentController.dispose();
     _newTagController.dispose();
 
-    // Cleanup audio resources
+    // Clean up audio resources
     if (isPlayingAudio) {
       MediaService().stopAudio();
     }

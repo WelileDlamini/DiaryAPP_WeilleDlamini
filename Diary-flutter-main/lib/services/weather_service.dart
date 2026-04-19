@@ -1,3 +1,5 @@
+
+
 import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
@@ -8,7 +10,7 @@ class WeatherService {
       'https://api.openweathermap.org/data/2.5/weather';
   static const Duration _timeout = Duration(seconds: 5);
 
-  /// Verificar si hay conexión a internet
+  /// Check if there is an internet connection
   Future<bool> hasInternetConnection() async {
     try {
       final result =
@@ -19,15 +21,16 @@ class WeatherService {
     }
   }
 
+  /// Fetch weather data by city name
   Future<Map<String, dynamic>?> fetchWeatherByCity(String city) async {
     try {
-      // Verificar conexión antes de hacer la petición
+      // Check connection before making request
       if (!await hasInternetConnection()) {
-        throw Exception('Sin conexión a internet');
+        throw Exception('No internet connection');
       }
 
       final url =
-          Uri.parse('$_baseUrl?q=$city&appid=$_apiKey&units=metric&lang=es');
+          Uri.parse('$_baseUrl?q=$city&appid=$_apiKey&units=metric&lang=en');
       final response = await http.get(url).timeout(_timeout);
 
       if (response.statusCode == 200) {
@@ -35,20 +38,21 @@ class WeatherService {
       }
       return null;
     } catch (e) {
-      rethrow; // Re-lanzar la excepción para manejarla en el widget
+      rethrow; // Re-throw the exception to handle it in the widget
     }
   }
 
+  /// Fetch weather data by geographic coordinates
   Future<Map<String, dynamic>?> fetchWeatherByCoords(
       double lat, double lon) async {
     try {
-      // Verificar conexión antes de hacer la petición
+      // Check connection before making request
       if (!await hasInternetConnection()) {
-        throw Exception('Sin conexión a internet');
+        throw Exception('No internet connection');
       }
 
       final url = Uri.parse(
-          '$_baseUrl?lat=$lat&lon=$lon&appid=$_apiKey&units=metric&lang=es');
+          '$_baseUrl?lat=$lat&lon=$lon&appid=$_apiKey&units=metric&lang=en');
       final response = await http.get(url).timeout(_timeout);
 
       if (response.statusCode == 200) {
@@ -56,7 +60,7 @@ class WeatherService {
       }
       return null;
     } catch (e) {
-      rethrow; // Re-lanzar la excepción para manejarla en el widget
+      rethrow; // Re-throw the exception to handle it in the widget
     }
   }
 }

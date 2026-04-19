@@ -1,5 +1,6 @@
+
 import 'package:flutter/material.dart';
-import '../services/database_service.dart.dart';
+import '../services/database_service.dart';
 import '../models/diary_entry_isar.dart';
 import '../main.dart';
 
@@ -31,19 +32,19 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       final entries = await DatabaseService.instance.getAllEntries();
       final allTags = await DatabaseService.instance.getAllTags();
 
-      // Calcular estadísticas mensuales desde la primera entrada
+      // Calculate monthly statistics from first entry
       final monthlyStats = <String, int>{};
       final now = DateTime.now();
 
       if (entries.isNotEmpty) {
-        // Encontrar la fecha de la primera entrada (instalación de la app)
+        // Find the date of the first entry
         final oldestEntry =
             entries.reduce((a, b) => a.date.isBefore(b.date) ? a : b);
         final firstMonth =
             DateTime(oldestEntry.date.year, oldestEntry.date.month, 1);
         final currentMonth = DateTime(now.year, now.month, 1);
 
-        // Calcular todos los meses desde la primera entrada hasta ahora
+        // Calculate all months from first entry to present
         DateTime month = firstMonth;
         while (month.isBefore(currentMonth) ||
             month.isAtSameMomentAs(currentMonth)) {
@@ -55,7 +56,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               .length;
           monthlyStats[monthKey] = count;
 
-          // Avanzar al siguiente mes
+          // Move to next month
           if (month.month == 12) {
             month = DateTime(month.year + 1, 1, 1);
           } else {
@@ -64,7 +65,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         }
       }
 
-      // Calcular palabras promedio
+      // Calculate average word count
       int totalWords = 0;
       for (final entry in entries) {
         totalWords += entry.content.split(' ').length;
@@ -72,7 +73,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
       final avgWords =
           entries.isNotEmpty ? (totalWords / entries.length).round() : 0;
 
-      // Calcular racha más larga
+      // Calculate longest streak
       int longestStreak = 0;
       int currentStreak = 0;
       final sortedEntries = entries.toList()
@@ -129,11 +130,13 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Estadísticas',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-            )),
+        title: const Text(
+          'Statistics',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
+        ),
         actions: [
           IconButton(
               icon: Icon(
@@ -154,57 +157,57 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Resumen General
+                  // General Summary
                   _buildStatsCard(
-                    'Resumen General',
+                    'General Summary',
                     [
-                      _StatItem('Total de Entradas', '${_stats['total'] ?? 0}',
+                      _StatItem('Total Entries', '${_stats['total'] ?? 0}',
                           Icons.book),
-                      _StatItem('Favoritas', '${_stats['favorites'] ?? 0}',
+                      _StatItem('Favorites', '${_stats['favorites'] ?? 0}',
                           Icons.favorite),
                       _StatItem(
-                          'Racha Actual',
-                          '${_stats['consecutive_days'] ?? 0} días',
+                          'Current Streak',
+                          '${_stats['consecutive_days'] ?? 0} days',
                           Icons.local_fire_department),
                       _StatItem(
-                          'Racha Más Larga',
-                          '${_stats['longest_streak'] ?? 0} días',
+                          'Longest Streak',
+                          '${_stats['longest_streak'] ?? 0} days',
                           Icons.trending_up),
                     ],
                   ),
 
                   const SizedBox(height: 16),
 
-                  // Estadísticas de Escritura
+                  // Writing Statistics
                   _buildStatsCard(
-                    'Estadísticas de Escritura',
+                    'Writing Statistics',
                     [
-                      _StatItem('Total de Palabras',
+                      _StatItem('Total Words',
                           '${_stats['total_words'] ?? 0}', Icons.text_fields),
                       _StatItem(
-                          'Promedio por Entrada',
-                          '${_stats['avg_words'] ?? 0} palabras',
+                          'Average per Entry',
+                          '${_stats['avg_words'] ?? 0} words',
                           Icons.analytics),
-                      _StatItem('Etiquetas Únicas', '${_topTags.length}',
+                      _StatItem('Unique Tags', '${_topTags.length}',
                           Icons.label),
                     ],
                   ),
 
                   const SizedBox(height: 16),
 
-                  // Actividad Mensual
+                  // Monthly Activity
                   if (_monthlyStats.isNotEmpty) ...[
                     _buildMonthlyActivityCard(),
                     const SizedBox(height: 16),
                   ],
 
-                  // Etiquetas Más Usadas
+                  // Most Used Tags
                   if (_topTags.isNotEmpty) ...[
                     _buildTagsCard(),
                     const SizedBox(height: 16),
                   ],
 
-                  // Entradas Recientes
+                  // Recent Entries
                   if (_entries.isNotEmpty) ...[
                     _buildRecentEntriesCard(),
                   ],
@@ -237,7 +240,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   padding: const EdgeInsets.only(bottom: 12),
                   child: Row(
                     children: [
-                      Icon(item.icon, size: 20, color: const Color(0xFF007C91)),
+                      Icon(item.icon, size: 20, color: const Color(0xFF7B2D8E)),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Text(
@@ -250,7 +253,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: Color(0xFF007C91),
+                          color: Color(0xFF7B2D8E),
                         ),
                       ),
                     ],
@@ -263,7 +266,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   }
 
   Widget _buildMonthlyActivityCard() {
-    // Convertir a lista y ordenar cronológicamente (más antiguos primero)
+    // Convert to list and sort chronologically (oldest first)
     final sortedMonths = _monthlyStats.entries.toList()
       ..sort((a, b) {
         final aParts = a.key.split('/');
@@ -282,7 +285,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Actividad Mensual',
+              'Monthly Activity',
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -300,7 +303,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                 child: Row(
                   children: [
                     Icon(Icons.calendar_month,
-                        size: 20, color: const Color(0xFF007C91)),
+                        size: 20, color: const Color(0xFF7B2D8E)),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
@@ -309,11 +312,11 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                       ),
                     ),
                     Text(
-                      '${entry.value} ${entry.value == 1 ? 'entrada' : 'entradas'}',
+                      '${entry.value} ${entry.value == 1 ? 'entry' : 'entries'}',
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
-                        color: Color(0xFF007C91),
+                        color: Color(0xFF7B2D8E),
                       ),
                     ),
                   ],
@@ -327,7 +330,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                   Icon(Icons.info_outline, size: 16, color: Colors.grey[600]),
                   const SizedBox(width: 8),
                   Text(
-                    'Total: ${sortedMonths.length} ${sortedMonths.length == 1 ? 'mes' : 'meses'} de actividad',
+                    'Total: ${sortedMonths.length} ${sortedMonths.length == 1 ? 'month' : 'months'} of activity',
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.grey[600],
@@ -346,18 +349,18 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   String _getMonthName(int month) {
     const months = [
       '',
-      'Enero',
-      'Febrero',
-      'Marzo',
-      'Abril',
-      'Mayo',
-      'Junio',
-      'Julio',
-      'Agosto',
-      'Septiembre',
-      'Octubre',
-      'Noviembre',
-      'Diciembre'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec'
     ];
     return months[month];
   }
@@ -372,7 +375,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Etiquetas Más Usadas',
+              'Most Used Tags',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -387,17 +390,17 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF007C91).withOpacity(0.1),
+                          color: const Color(0xFF7B2D8E).withOpacity(0.1),
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
-                              color: const Color(0xFF007C91).withOpacity(0.3)),
+                              color: const Color(0xFF7B2D8E).withOpacity(0.3)),
                         ),
                         child: Text(
                           tag,
                           style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
-                            color: Color(0xFF007C91),
+                            color: Color(0xFF7B2D8E),
                           ),
                         ),
                       ))
@@ -421,7 +424,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Entradas Recientes',
+              'Recent Entries',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -437,7 +440,7 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                         size: 20,
                         color: entry.isFavorite
                             ? Colors.red
-                            : const Color(0xFF007C91),
+                            : const Color(0xFF7B2D8E),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
@@ -464,10 +467,10 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
                         ),
                       ),
                       Text(
-                        '${entry.content.split(' ').length} palabras',
+                        '${entry.content.split(' ').length} words',
                         style: const TextStyle(
                           fontSize: 12,
-                          color: Color(0xFF007C91),
+                          color: Color(0xFF7B2D8E),
                         ),
                       ),
                     ],
@@ -481,21 +484,15 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
 
   String _formatDate(DateTime date) {
     final months = [
-      'Ene',
-      'Feb',
-      'Mar',
-      'Abr',
-      'May',
-      'Jun',
-      'Jul',
-      'Ago',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dic'
+      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
     ];
     return "${date.day} ${months[date.month - 1]} ${date.year}";
   }
+}
+
+class DiaryApp {
+  static get appKey => null;
 }
 
 class _StatItem {

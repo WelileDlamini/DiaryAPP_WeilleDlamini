@@ -1,17 +1,18 @@
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../services/access_code_service.dart';
 
-class AccessCodeSetupScreen extends StatefulWidget {
+class PinSetupScreen extends StatefulWidget {
   final bool isChanging;
 
-  const AccessCodeSetupScreen({super.key, this.isChanging = false});
+  const PinSetupScreen({super.key, this.isChanging = false});
 
   @override
-  State<AccessCodeSetupScreen> createState() => _AccessCodeSetupScreenState();
+  State<PinSetupScreen> createState() => _PinSetupScreenState();
 }
 
-class _AccessCodeSetupScreenState extends State<AccessCodeSetupScreen> {
+class _PinSetupScreenState extends State<PinSetupScreen> {
   final List<TextEditingController> _controllers =
       List.generate(4, (index) => TextEditingController());
   final List<FocusNode> _focusNodes = List.generate(4, (index) => FocusNode());
@@ -80,7 +81,7 @@ class _AccessCodeSetupScreenState extends State<AccessCodeSetupScreen> {
 
   Future<void> _setupCode() async {
     if (!_showConfirmation) {
-      // Primera vez: mostrar confirmación
+      // First step: show confirmation screen
       setState(() {
         _showConfirmation = true;
       });
@@ -88,12 +89,12 @@ class _AccessCodeSetupScreenState extends State<AccessCodeSetupScreen> {
       return;
     }
 
-    // Segunda vez: verificar y guardar
+    // Second step: verify and save
     final code = _getCurrentInputCode();
     final confirmCode = _getCurrentConfirmCode();
 
     if (code != confirmCode) {
-      _showErrorSnackBar('Los códigos no coinciden. Inténtalo de nuevo.');
+      _showErrorSnackBar('PIN codes do not match. Please try again.');
       setState(() {
         _showConfirmation = false;
       });
@@ -114,18 +115,17 @@ class _AccessCodeSetupScreenState extends State<AccessCodeSetupScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(widget.isChanging
-                  ? 'Código cambiado exitosamente'
-                  : 'Código configurado exitosamente'),
+                  ? 'PIN changed successfully'
+                  : 'PIN set up successfully'),
               backgroundColor: Colors.green,
             ),
           );
         }
       } else {
-        _showErrorSnackBar(
-            'Error al configurar el código. Inténtalo de nuevo.');
+        _showErrorSnackBar('Error setting up PIN. Please try again.');
       }
     } catch (e) {
-      _showErrorSnackBar('Error inesperado: $e');
+      _showErrorSnackBar('Unexpected error: $e');
     } finally {
       if (mounted) {
         setState(() {
@@ -157,7 +157,7 @@ class _AccessCodeSetupScreenState extends State<AccessCodeSetupScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.isChanging ? 'Cambiar PIN' : 'Configurar PIN'),
+        title: Text(widget.isChanging ? 'Change PIN' : 'Set up PIN'),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),
@@ -170,27 +170,27 @@ class _AccessCodeSetupScreenState extends State<AccessCodeSetupScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(
+                Icon(
                   Icons.security,
                   size: 80,
-                  color: Color(0xFF007C91),
+                  color: const Color(0xFF7B2D8E), // Purple
                 ),
                 const SizedBox(height: 32),
                 Text(
                   _showConfirmation
-                      ? 'Confirma tu PIN'
-                      : 'Crea tu PIN de 4 dígitos',
+                      ? 'Confirm your PIN'
+                      : 'Create your 4-digit PIN',
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: const Color(0xFF007C91),
+                        color: const Color(0xFF7B2D8E), // Purple
                       ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 16),
                 Text(
                   _showConfirmation
-                      ? 'Ingresa nuevamente tu PIN para confirmarlo'
-                      : 'Este PIN protegerá el acceso a tu diario',
+                      ? 'Enter your PIN again to confirm'
+                      : 'This PIN will protect access to your diary',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: Colors.grey[600],
                       ),
@@ -226,7 +226,7 @@ class _AccessCodeSetupScreenState extends State<AccessCodeSetupScreen> {
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: const BorderSide(
-                              color: Color(0xFF007C91),
+                              color: Color(0xFF7B2D8E), // Purple
                               width: 2,
                             ),
                           ),
@@ -270,14 +270,15 @@ class _AccessCodeSetupScreenState extends State<AccessCodeSetupScreen> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
+                          backgroundColor: const Color(0xFF7B2D8E), // Purple
                         ),
                         child: Text(
-                            _showConfirmation ? 'Confirmar PIN' : 'Continuar'),
+                            _showConfirmation ? 'Confirm PIN' : 'Continue'),
                       ),
                       const SizedBox(height: 16),
                       TextButton(
                         onPressed: _clearCode,
-                        child: const Text('Limpiar'),
+                        child: const Text('Clear'),
                       ),
                       if (_showConfirmation) ...[
                         const SizedBox(height: 8),
@@ -289,7 +290,7 @@ class _AccessCodeSetupScreenState extends State<AccessCodeSetupScreen> {
                             _clearAllCodes();
                             _focusNodes[0].requestFocus();
                           },
-                          child: const Text('Volver'),
+                          child: const Text('Back'),
                         ),
                       ],
                     ],

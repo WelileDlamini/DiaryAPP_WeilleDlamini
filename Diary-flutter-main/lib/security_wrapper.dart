@@ -1,16 +1,18 @@
+
+
 import 'package:flutter/material.dart';
-import 'screens/pin_verify_screen.dart.dart';
+import 'screens/pin_verify_screen.dart';
 import 'screens/home_screen.dart';
 import 'services/access_code_service.dart';
 
-class AppLockWrapper extends StatefulWidget {
-  const AppLockWrapper({super.key});
+class SecurityWrapper extends StatefulWidget {
+  const SecurityWrapper({super.key});
 
   @override
-  State<AppLockWrapper> createState() => _AppLockWrapperState();
+  State<SecurityWrapper> createState() => _SecurityWrapperState();
 }
 
-class _AppLockWrapperState extends State<AppLockWrapper>
+class _SecurityWrapperState extends State<SecurityWrapper>
     with WidgetsBindingObserver {
   bool _isLocked = true;
   bool _isLoading = true;
@@ -32,12 +34,12 @@ class _AppLockWrapperState extends State<AppLockWrapper>
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
 
-    // Cuando la app regresa del background o se reanuda
+    // When app returns from background or resumes
     if (state == AppLifecycleState.resumed) {
       _checkLockStatus();
     }
 
-    // Cuando la app se va al background
+    // When app goes to background
     if (state == AppLifecycleState.paused ||
         state == AppLifecycleState.inactive) {
       _lockApp();
@@ -52,7 +54,7 @@ class _AppLockWrapperState extends State<AppLockWrapper>
 
       if (mounted) {
         setState(() {
-          // Solo bloquear si hay PIN configurado, está habilitado, y no está logueado
+          // Only lock if PIN is configured, enabled, and not logged in
           _isLocked = hasAccessCode && isEnabled && !isLoggedIn;
           _isLoading = false;
         });
@@ -60,7 +62,7 @@ class _AppLockWrapperState extends State<AppLockWrapper>
     } catch (e) {
       if (mounted) {
         setState(() {
-          _isLocked = false; // En caso de error, permitir acceso
+          _isLocked = false; // In case of error, allow access
           _isLoading = false;
         });
       }
@@ -72,7 +74,7 @@ class _AppLockWrapperState extends State<AppLockWrapper>
     final isEnabled = await AccessCodeService.isAccessCodeEnabled();
 
     if (hasAccessCode && isEnabled) {
-      // Limpiar el estado de login cuando la app se va al background
+      // Clear login state when app goes to background
       await AccessCodeService.clearLoginState();
 
       if (mounted) {
@@ -100,7 +102,7 @@ class _AppLockWrapperState extends State<AppLockWrapper>
     }
 
     if (_isLocked) {
-      return AccessCodeVerificationScreen(
+      return PinVerifyScreen(
         canCancel: false,
         onVerificationSuccess: _onUnlocked,
       );

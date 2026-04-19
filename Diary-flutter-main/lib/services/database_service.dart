@@ -1,3 +1,5 @@
+
+
 import 'package:path_provider/path_provider.dart';
 import 'package:isar/isar.dart';
 import '../models/diary_entry_isar.dart';
@@ -25,13 +27,13 @@ class DatabaseService {
     return await Isar.open(
       [DiaryEntrySchema],
       directory: dir.path,
-      name: 'diary_database',
+      name: 'mydiary_database',
     );
   }
 
-  // CRUD Operations
+  
 
-  // Crear nueva entrada
+  /// Create a new diary entry
   Future<int> createEntry(DiaryEntry entry) async {
     final isar = await database;
     return await isar.writeTxn(() async {
@@ -39,13 +41,13 @@ class DatabaseService {
     });
   }
 
-  // Obtener todas las entradas
+  /// Get all diary entries (sorted by date descending)
   Future<List<DiaryEntry>> getAllEntries() async {
     final isar = await database;
     return await isar.diaryEntrys.where().sortByDateDesc().findAll();
   }
 
-  // Obtener entradas por fecha
+  /// Get entries by specific date
   Future<List<DiaryEntry>> getEntriesByDate(DateTime date) async {
     final isar = await database;
     final startOfDay = DateTime(date.year, date.month, date.day);
@@ -57,7 +59,7 @@ class DatabaseService {
         .findAll();
   }
 
-  // Obtener entradas favoritas
+  /// Get all favorite entries
   Future<List<DiaryEntry>> getFavoriteEntries() async {
     final isar = await database;
     return await isar.diaryEntrys
@@ -67,7 +69,7 @@ class DatabaseService {
         .findAll();
   }
 
-  // Buscar entradas por texto
+  /// Search entries by title or content text
   Future<List<DiaryEntry>> searchEntries(String query) async {
     final isar = await database;
     return await isar.diaryEntrys
@@ -79,7 +81,7 @@ class DatabaseService {
         .findAll();
   }
 
-  // Obtener entradas por etiqueta
+  /// Get entries by tag
   Future<List<DiaryEntry>> getEntriesByTag(String tag) async {
     final isar = await database;
     return await isar.diaryEntrys
@@ -89,7 +91,7 @@ class DatabaseService {
         .findAll();
   }
 
-  // Actualizar entrada
+  /// Update an existing entry
   Future<void> updateEntry(DiaryEntry entry) async {
     final isar = await database;
     entry.updateTimestamp();
@@ -98,7 +100,7 @@ class DatabaseService {
     });
   }
 
-  // Eliminar entrada
+  /// Delete an entry by ID
   Future<bool> deleteEntry(int id) async {
     final isar = await database;
     return await isar.writeTxn(() async {
@@ -106,13 +108,13 @@ class DatabaseService {
     });
   }
 
-  // Obtener entrada por ID
+  /// Get a single entry by ID
   Future<DiaryEntry?> getEntryById(int id) async {
     final isar = await database;
     return await isar.diaryEntrys.get(id);
   }
 
-  // Marcar/desmarcar como favorito
+  /// Toggle favorite status of an entry
   Future<void> toggleFavorite(int id) async {
     final isar = await database;
     final entry = await isar.diaryEntrys.get(id);
@@ -125,14 +127,14 @@ class DatabaseService {
     }
   }
 
-  // Obtener estadísticas
+  /// Get diary statistics (total, favorites, consecutive days)
   Future<Map<String, int>> getStatistics() async {
     final isar = await database;
     final totalEntries = await isar.diaryEntrys.count();
     final favoriteEntries =
         await isar.diaryEntrys.where().isFavoriteEqualTo(true).count();
 
-    // Calcular días seguidos (últimos días con entradas)
+    // Calculate consecutive days (last days with entries)
     final now = DateTime.now();
     int consecutiveDays = 0;
 
@@ -142,7 +144,7 @@ class DatabaseService {
       if (entriesForDay.isNotEmpty) {
         consecutiveDays++;
       } else if (i > 0) {
-        break; // Si no hay entrada en un día, rompe la racha
+        break; // Break streak if no entry on a day
       }
     }
 
@@ -153,7 +155,7 @@ class DatabaseService {
     };
   }
 
-  // Obtener todas las etiquetas únicas
+  /// Get all unique tags from all entries
   Future<List<String>> getAllTags() async {
     final isar = await database;
     final entries = await isar.diaryEntrys.where().findAll();
@@ -166,7 +168,7 @@ class DatabaseService {
     return allTags.toList()..sort();
   }
 
-  // Cerrar la base de datos
+  /// Close the database connection
   Future<void> closeDatabase() async {
     if (_isar != null) {
       await _isar!.close();

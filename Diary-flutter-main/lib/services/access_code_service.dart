@@ -7,19 +7,19 @@ class AccessCodeService {
   static const String _accessCodeEnabledKey = 'access_code_enabled';
   static const String _loginStateKey = 'login_state';
 
-  /// Verificar si existe un código de acceso configurado
+  /// Check if an access code has been configured
   static Future<bool> hasAccessCode() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_accessCodeKey) != null;
   }
 
-  /// Verificar si el código de acceso está habilitado
+  /// Check if the access code is currently enabled
   static Future<bool> isAccessCodeEnabled() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_accessCodeEnabledKey) ?? false;
   }
 
-  /// Configurar un nuevo código de acceso
+  /// Set up a new access code
   static Future<bool> setAccessCode(String code) async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -35,7 +35,7 @@ class AccessCodeService {
     }
   }
 
-  /// Verificar un código de acceso
+  /// Verify an access code
   static Future<bool> verifyAccessCode(String code) async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -53,13 +53,13 @@ class AccessCodeService {
     }
   }
 
-  /// Habilitar o deshabilitar el código de acceso
+  /// Enable or disable the access code
   static Future<void> setAccessCodeEnabled(bool enabled) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_accessCodeEnabledKey, enabled);
   }
 
-  /// Eliminar el código de acceso completamente
+  /// Completely remove the access code
   static Future<void> removeAccessCode() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_accessCodeKey);
@@ -67,37 +67,37 @@ class AccessCodeService {
     await prefs.remove(_loginStateKey);
   }
 
-  /// Marcar que el usuario ya se autenticó en esta sesión
+  /// Mark that the user has already authenticated in this session
   static Future<void> setLoginState(bool loggedIn) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_loginStateKey, loggedIn);
   }
 
-  /// Verificar si el usuario ya se autenticó en esta sesión
+  /// Check if the user has already authenticated in this session
   static Future<bool> isLoggedIn() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_loginStateKey) ?? false;
   }
 
-  /// Limpiar el estado de login (para cerrar sesión)
+  /// Clear the login state (for sign out)
   static Future<void> clearLoginState() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_loginStateKey);
   }
 
-  /// Hash del código de acceso usando SHA-256
+  /// Hash the access code using SHA-256 for secure storage
   static String _hashCode(String code) {
     final bytes = utf8.encode(code);
     final digest = sha256.convert(bytes);
     return digest.toString();
   }
 
-  /// Verificar si la aplicación debe mostrar el PIN al inicio
+  /// Check if the app should show the PIN screen on launch
   static Future<bool> shouldShowPinScreen() async {
-    // Solo mostrar PIN si:
-    // 1. Hay un código de acceso configurado
-    // 2. El código de acceso está habilitado
-    // 3. El usuario no se ha autenticado en esta sesión
+    // Show PIN only if:
+    // 1. An access code has been configured
+    // 2. The access code is enabled
+    // 3. The user has not authenticated in this session
     final hasCode = await hasAccessCode();
     final isEnabled = await isAccessCodeEnabled();
     final isLoggedIn = await AccessCodeService.isLoggedIn();
