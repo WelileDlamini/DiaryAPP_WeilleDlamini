@@ -1,7 +1,14 @@
-import 'package:diary/screens/statistics_screen.dart';
+// ==================================================
+// MyDiary - Home Screen
+// Developer: Welile Dlamini
+// Course: Mobile App Final Project (CS441)
+// Date: April 2026
+// ==================================================
+
 import 'package:flutter/material.dart';
 import '../components/weather_card.dart';
 import '../components/bottom_nav.dart';
+import '../main.dart';
 import '../services/database_service.dart';
 import 'notes_screen.dart';
 
@@ -68,13 +75,13 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           IconButton(
             icon: Icon(
-              DiaryApp.appKey.currentState?.isDarkMode == true
+              MyDiaryApp.appKey.currentState?.isDarkMode == true
                   ? Icons.wb_sunny
                   : Icons.nightlight_round,
               size: 28,
             ),
             onPressed: () {
-              DiaryApp.appKey.currentState?.toggleTheme();
+              MyDiaryApp.appKey.currentState?.toggleTheme();
             },
           ),
         ],
@@ -194,7 +201,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-
+// ==================================================
+// Quick Statistics Widget
+// ==================================================
 class _QuickStat extends StatelessWidget {
   final IconData icon;
   final String label;

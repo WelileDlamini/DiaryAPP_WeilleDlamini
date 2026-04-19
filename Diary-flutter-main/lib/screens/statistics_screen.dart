@@ -1,4 +1,5 @@
 
+import 'package:diary/main.dart';
 import 'package:flutter/material.dart';
 import '../services/database_service.dart';
 import '../models/diary_entry_isar.dart';
@@ -139,13 +140,13 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
         actions: [
           IconButton(
               icon: Icon(
-                DiaryApp.appKey.currentState?.isDarkMode == true
+                MyDiaryApp.appKey.currentState?.isDarkMode == true
                     ? Icons.wb_sunny
                     : Icons.nightlight_round,
                 size: 28,
               ),
               onPressed: () {
-                DiaryApp.appKey.currentState?.toggleTheme();
+                MyDiaryApp.appKey.currentState?.toggleTheme();
               }),
         ],
       ),
@@ -490,9 +491,6 @@ class _StatisticsScreenState extends State<StatisticsScreen> {
   }
 }
 
-class DiaryApp {
-  static get appKey => null;
-}
 
 class _StatItem {
   final String label;

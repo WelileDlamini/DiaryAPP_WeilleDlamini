@@ -1,6 +1,6 @@
+import 'package:diary/main.dart';
 import 'package:diary/screens/statistics_screen.dart';
 import 'package:flutter/material.dart';
-import '../main.dart';
 import '../services/notification_service.dart';
 
 class RemindersScreen extends StatefulWidget {
@@ -73,13 +73,13 @@ class _RemindersScreenState extends State<RemindersScreen> {
         actions: [
           IconButton(
               icon: Icon(
-                DiaryApp.appKey.currentState?.isDarkMode == true
+                MyDiaryApp.appKey.currentState?.isDarkMode == true
                     ? Icons.wb_sunny
                     : Icons.nightlight_round,
                 size: 28,
               ),
               onPressed: () {
-                DiaryApp.appKey.currentState?.toggleTheme();
+                MyDiaryApp.appKey.currentState?.toggleTheme();
               }),
         ],
       ),

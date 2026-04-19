@@ -1,4 +1,5 @@
 
+import 'package:diary/main.dart';
 import 'package:diary/screens/statistics_screen.dart';
 import 'package:flutter/material.dart';
 import '../components/bottom_nav.dart';
@@ -282,7 +283,7 @@ class _NotesScreenState extends State<NotesScreen> {
   }
 
   Color _getNoteColor(int index) {
-    final isDark = DiaryApp.appKey.currentState?.isDarkMode ?? false;
+    final isDark = MyDiaryApp.appKey.currentState?.isDarkMode ?? false;
 
     if (isDark) {
       // Semi-transparent dark colors for dark mode
@@ -348,13 +349,13 @@ class _NotesScreenState extends State<NotesScreen> {
                 onPressed: _showSortDialog),
           IconButton(
               icon: Icon(
-                DiaryApp.appKey.currentState?.isDarkMode == true
+                MyDiaryApp.appKey.currentState?.isDarkMode == true
                     ? Icons.wb_sunny
                     : Icons.nightlight_round,
                 size: 28,
               ),
               onPressed: () {
-                DiaryApp.appKey.currentState?.toggleTheme();
+                MyDiaryApp.appKey.currentState?.toggleTheme();
               }),
         ],
       ),
@@ -577,7 +578,7 @@ class _FilterChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = DiaryApp.appKey.currentState?.isDarkMode ?? false;
+    final isDark = MyDiaryApp.appKey.currentState?.isDarkMode ?? false;
 
     return GestureDetector(
       onTap: onTap,
@@ -633,7 +634,7 @@ class _NoteCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = DiaryApp.appKey.currentState?.isDarkMode ?? false;
+    final isDark = MyDiaryApp.appKey.currentState?.isDarkMode ?? false;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),

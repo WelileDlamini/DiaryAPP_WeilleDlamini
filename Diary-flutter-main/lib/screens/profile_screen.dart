@@ -1,5 +1,6 @@
 
 
+import 'package:diary/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -10,7 +11,6 @@ import 'statistics_screen.dart';
 import 'reminders_screen.dart';
 import 'pin_setup_screen.dart';
 import 'pin_verify_screen.dart';
-import '../main.dart';
 import '../services/database_service.dart';
 import '../services/access_code_service.dart';
 import '../services/media_service.dart';
@@ -468,13 +468,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               }),
           IconButton(
               icon: Icon(
-                DiaryApp.appKey.currentState?.isDarkMode == true
+                MyDiaryApp.appKey.currentState?.isDarkMode == true
                     ? Icons.wb_sunny
                     : Icons.nightlight_round,
                 size: 28,
               ),
               onPressed: () {
-                DiaryApp.appKey.currentState?.toggleTheme();
+                MyDiaryApp.appKey.currentState?.toggleTheme();
               }),
         ],
       ),
@@ -708,11 +708,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   title: 'Dark Mode',
                   subtitle: 'Enable dark theme',
                   onTap: () {
-                    DiaryApp.appKey.currentState?.toggleTheme();
+                    MyDiaryApp.appKey.currentState?.toggleTheme();
                   },
                   hasSwitch: true,
                   switchValue:
-                      DiaryApp.appKey.currentState?.isDarkMode ?? false,
+                      MyDiaryApp.appKey.currentState?.isDarkMode ?? false,
                 ),
                 _MenuItem(
                   icon: Icons.notifications_outlined,

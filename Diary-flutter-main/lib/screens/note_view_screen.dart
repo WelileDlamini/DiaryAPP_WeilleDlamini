@@ -1,5 +1,6 @@
 
 
+import 'package:diary/main.dart';
 import 'package:diary/screens/statistics_screen.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
@@ -33,7 +34,7 @@ class _NoteViewScreenState extends State<NoteViewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = DiaryApp.appKey.currentState?.isDarkMode ?? false;
+    final isDarkMode = MyDiaryApp.appKey.currentState?.isDarkMode ?? false;
 
     return Scaffold(
       appBar: AppBar(
