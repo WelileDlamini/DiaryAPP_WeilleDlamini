@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'app_lock_wrapper.dart';
+import 'security_wrapper.dart.dart';
 import 'providers/theme_provider.dart';
 import 'services/notification_service.dart';
 

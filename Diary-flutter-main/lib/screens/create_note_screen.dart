@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
 import '../main.dart';
-import '../services/database_service_isar.dart';
+import '../services/database_service.dart.dart';
 import '../services/media_service.dart';
 import '../models/diary_entry_isar.dart';
 

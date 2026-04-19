@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../components/weather_card.dart';
 import '../components/bottom_nav.dart';
 import '../main.dart';
-import '../services/database_service_isar.dart';
+import '../services/database_service.dart.dart';
 import 'notes_screen.dart';
 
 class HomeScreen extends StatefulWidget {

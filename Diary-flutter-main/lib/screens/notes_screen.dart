@@ -3,7 +3,7 @@ import '../components/bottom_nav.dart';
 import 'create_note_screen.dart';
 import 'note_view_screen.dart';
 import '../main.dart';
-import '../services/database_service_isar.dart';
+import '../services/database_service.dart.dart';
 import '../models/diary_entry_isar.dart';
 
 class NotesScreen extends StatefulWidget {

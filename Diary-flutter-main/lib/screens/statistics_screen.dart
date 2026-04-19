@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../services/database_service_isar.dart';
+import '../services/database_service.dart.dart';
 import '../models/diary_entry_isar.dart';
 import '../main.dart';
 

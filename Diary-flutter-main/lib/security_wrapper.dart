@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'screens/access_code_verification_screen.dart';
+import 'screens/pin_verify_screen.dart.dart';
 import 'screens/home_screen.dart';
 import 'services/access_code_service.dart';
 
