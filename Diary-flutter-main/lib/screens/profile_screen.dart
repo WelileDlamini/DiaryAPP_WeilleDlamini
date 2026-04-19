@@ -988,7 +988,7 @@ class _MenuItem extends StatelessWidget {
           ? Switch(
               value: switchValue,
               onChanged: (value) => onTap(),
-              activeColor: const Color(0xFF7B2D8E),
+              activeThumbColor: const Color(0xFF7B2D8E),
             )
           : Icon(
               Icons.arrow_forward_ios,

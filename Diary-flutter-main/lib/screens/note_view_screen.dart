@@ -3,7 +3,6 @@
 import 'package:diary/screens/statistics_screen.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
-import '../main.dart';
 import '../models/diary_entry_isar.dart';
 import '../services/database_service.dart';
 import '../services/media_service.dart';

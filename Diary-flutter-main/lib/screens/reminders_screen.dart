@@ -109,7 +109,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
                         _showTimePickerDialog();
                       }
                     },
-                    activeColor: const Color(0xFF7B2D8E),
+                    activeThumbColor: const Color(0xFF7B2D8E),
                   ),
                   if (_dailyReminder) ...[
                     const Divider(),
@@ -194,7 +194,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
                         _motivationalQuotes = value;
                       });
                     },
-                    activeColor: const Color(0xFF7B2D8E),
+                    activeThumbColor: const Color(0xFF7B2D8E),
                   ),
                   SwitchListTile(
                     title: const Text('Streak reminders'),
@@ -206,7 +206,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
                         _streakReminders = value;
                       });
                     },
-                    activeColor: const Color(0xFF7B2D8E),
+                    activeThumbColor: const Color(0xFF7B2D8E),
                   ),
                   SwitchListTile(
                     title: const Text('Weekly review'),
@@ -217,7 +217,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
                         _weeklyReview = value;
                       });
                     },
-                    activeColor: const Color(0xFF7B2D8E),
+                    activeThumbColor: const Color(0xFF7B2D8E),
                   ),
                 ],
               ),

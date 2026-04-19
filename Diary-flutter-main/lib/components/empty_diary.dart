@@ -1,3 +1,5 @@
+
+
 import 'package:flutter/material.dart';
 import '../screens/create_note_screen.dart';
 
@@ -11,7 +13,7 @@ class EmptyDiary extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            'No hay entradas en tu diario',
+            'No entries in your diary yet',
             style: TextStyle(
                 fontSize: 17,
                 color: Theme.of(context).textTheme.bodyLarge?.color,
@@ -19,7 +21,7 @@ class EmptyDiary extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Comienza a escribir tu primera entrada',
+            'Start writing your first entry',
             style: TextStyle(
               fontSize: 13,
               color: Theme.of(context).textTheme.bodyMedium?.color,
@@ -38,13 +40,13 @@ class EmptyDiary extends StatelessWidget {
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF007C91),
+                backgroundColor: const Color(0xFF7B2D8E), // Purple
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
                 elevation: 0,
               ),
-              child: const Text('Nueva entrada',
+              child: const Text('New Entry',
                   style: TextStyle(fontSize: 15, color: Colors.white)),
             ),
           ),

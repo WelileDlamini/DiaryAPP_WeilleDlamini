@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import '../services/weather_service.dart';
 
@@ -29,7 +30,7 @@ class _WeatherCardState extends State<WeatherCard> {
         weatherData = null;
         loading = false;
         errorMsg =
-            "No se pudo cargar el clima para '$queryCity'. Verifica el nombre.";
+            "Could not load weather for '$queryCity'. Check the city name.";
       });
     } else {
       setState(() {
@@ -51,13 +52,13 @@ class _WeatherCardState extends State<WeatherCard> {
   Widget build(BuildContext context) {
     final now = DateTime.now();
     final weekDays = [
-      'DOMINGO',
-      'LUNES',
-      'MARTES',
-      'MIÉRCOLES',
-      'JUEVES',
-      'VIERNES',
-      'SÁBADO'
+      'SUNDAY',
+      'MONDAY',
+      'TUESDAY',
+      'WEDNESDAY',
+      'THURSDAY',
+      'FRIDAY',
+      'SATURDAY'
     ];
     String day = weekDays[now.weekday % 7];
     String date =
@@ -86,7 +87,7 @@ class _WeatherCardState extends State<WeatherCard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Input para ciudad/departamento (más compacto)
+          // City/Department input field
           Row(
             children: [
               Expanded(
@@ -97,7 +98,7 @@ class _WeatherCardState extends State<WeatherCard> {
                     color: Theme.of(context).textTheme.bodyLarge?.color,
                   ),
                   decoration: InputDecoration(
-                    labelText: 'Ciudad o Departamento',
+                    labelText: 'City or Department',
                     labelStyle: TextStyle(
                       fontSize: 12,
                       color: Theme.of(context).textTheme.bodyMedium?.color,
@@ -124,7 +125,7 @@ class _WeatherCardState extends State<WeatherCard> {
                         }
                       },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF007C91),
+                  backgroundColor: const Color(0xFF7B2D8E), // Purple
                   elevation: 0,
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
@@ -132,7 +133,7 @@ class _WeatherCardState extends State<WeatherCard> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: const Text('Buscar',
+                child: const Text('Search',
                     style: TextStyle(fontSize: 12, color: Colors.white)),
               ),
             ],
@@ -142,7 +143,7 @@ class _WeatherCardState extends State<WeatherCard> {
           if (loading)
             const Center(
               child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF007C91)),
+                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF7B2D8E)), // Purple
               ),
             )
           else if (errorMsg != null)
@@ -293,7 +294,7 @@ class _WeatherCardState extends State<WeatherCard> {
                             ? weatherData!["weather"][0]["description"]
                                 .toString()
                                 .toUpperCase()
-                            : "SIN DATOS",
+                            : "NO DATA",
                         style: TextStyle(
                             fontSize: 12,
                             color:
@@ -308,7 +309,7 @@ class _WeatherCardState extends State<WeatherCard> {
           else
             Center(
               child: Text(
-                "No hay datos del clima disponibles",
+                "No weather data available",
                 style: TextStyle(
                   color: Theme.of(context).textTheme.bodyMedium?.color,
                   fontSize: 14,

@@ -1,3 +1,5 @@
+
+
 import 'package:flutter/material.dart';
 import '../screens/notes_screen.dart';
 import '../screens/profile_screen.dart';
@@ -18,13 +20,14 @@ class BottomNav extends StatelessWidget {
           BoxShadow(
             color: Theme.of(context).shadowColor.withOpacity(0.1),
             blurRadius: 8,
-            offset: Offset(0, -2),
+            offset: const Offset(0, -2),
           ),
         ],
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          // Entries/Notes Button
           _NavCircleIcon(
             icon: Icons.book,
             onTap: () {
@@ -49,9 +52,10 @@ class BottomNav extends StatelessWidget {
                 );
               }
             },
-            color: Color(0xFF007C91),
+            color: const Color(0xFF7B2D8E), // Purple
             isSelected: currentIndex == 1,
           ),
+          // Home Button (Main)
           _NavCircleIcon(
             icon: Icons.home,
             onTap: () {
@@ -76,10 +80,11 @@ class BottomNav extends StatelessWidget {
                 );
               }
             },
-            color: Color(0xFF4F8CFF),
+            color: const Color(0xFF7B2D8E), // Purple
             isMain: true,
             isSelected: currentIndex == 0,
           ),
+          // Profile Button
           _NavCircleIcon(
             icon: Icons.person_outline,
             onTap: () {
@@ -106,7 +111,7 @@ class BottomNav extends StatelessWidget {
                 );
               }
             },
-            color: Color(0xFF007C91),
+            color: const Color(0xFF7B2D8E), // Purple
             isSelected: currentIndex == 2,
           ),
         ],
@@ -114,6 +119,7 @@ class BottomNav extends StatelessWidget {
     );
   }
 }
+
 
 class _NavCircleIcon extends StatelessWidget {
   final IconData icon;
@@ -145,7 +151,7 @@ class _NavCircleIcon extends StatelessWidget {
                   BoxShadow(
                     color: color.withOpacity(0.2),
                     blurRadius: 8,
-                    offset: Offset(0, 2),
+                    offset: const Offset(0, 2),
                   ),
                 ]
               : [],

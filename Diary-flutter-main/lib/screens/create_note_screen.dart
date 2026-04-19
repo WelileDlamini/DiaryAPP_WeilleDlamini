@@ -1,8 +1,5 @@
-// Developer: Welile Dlamini
-// Course: Mobile App Final Project (CS441)
 
 
-import 'package:diary/screens/statistics_screen.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import '../main.dart';
@@ -99,12 +96,12 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
         actions: [
           IconButton(
             icon: Icon(
-              DiaryApp.appKey.currentState?.isDarkMode == true
+              MyDiaryApp.appKey.currentState?.isDarkMode == true
                   ? Icons.wb_sunny
                   : Icons.nightlight_round,
             ),
             onPressed: () {
-              DiaryApp.appKey.currentState?.toggleTheme();
+              MyDiaryApp.appKey.currentState?.toggleTheme();
             },
           ),
         ],
@@ -143,7 +140,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     );
   }
 
-  
+
   Widget _buildDateSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -189,7 +186,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     );
   }
 
-  
+ 
   Widget _buildTitleSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -230,7 +227,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     );
   }
 
- 
+
   Widget _buildContentSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -272,7 +269,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     );
   }
 
-
+ 
   Widget _buildTagsSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -650,7 +647,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
     );
   }
 
-
+  
   Widget _buildSaveButton() {
     return SizedBox(
       width: double.infinity,
@@ -677,6 +674,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
   }
 
  
+
   // Open date picker
   Future<void> _selectDate() async {
     final DateTime? picked = await showDatePicker(
