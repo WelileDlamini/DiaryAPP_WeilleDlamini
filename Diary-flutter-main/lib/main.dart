@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'security_wrapper.dart';  // This imports the correct StatefulWidget
+import 'package:shared_preferences/shared_preferences.dart';
+import 'security_wrapper.dart';
 import 'providers/theme_provider.dart';
 import 'services/notification_service.dart';
+import 'screens/login_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,6 +35,7 @@ class MyDiaryApp extends StatefulWidget {
 
 class _MyDiaryAppState extends State<MyDiaryApp> {
   final ThemeProvider _themeProvider = ThemeProvider();
+  late Future<Widget> _initialScreen;
 
   @override
   void initState() {
@@ -40,6 +43,7 @@ class _MyDiaryAppState extends State<MyDiaryApp> {
     _themeProvider.addListener(() {
       setState(() {});
     });
+    _initialScreen = _getInitialScreen();
   }
 
   void toggleTheme() {
@@ -48,6 +52,18 @@ class _MyDiaryAppState extends State<MyDiaryApp> {
 
   bool get isDarkMode => _themeProvider.isDarkMode;
 
+  // Determine which screen to show based on login status
+  Future<Widget> _getInitialScreen() async {
+    final prefs = await SharedPreferences.getInstance();
+    final isLoggedIn = prefs.getBool('is_logged_in') ?? false;
+    
+    if (isLoggedIn) {
+      return const SecurityWrapper();
+    } else {
+      return const LoginScreen();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -55,7 +71,26 @@ class _MyDiaryAppState extends State<MyDiaryApp> {
       debugShowCheckedModeBanner: false,
       theme: _themeProvider.currentTheme,
       themeMode: _themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
-      home: const SecurityWrapper(),  // Now this uses the correct Widget from security_wrapper.dart
+      home: FutureBuilder<Widget>(
+        future: _initialScreen,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Scaffold(
+              body: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          }
+          if (snapshot.hasError) {
+            return const Scaffold(
+              body: Center(
+                child: Text('Error loading app. Please restart.'),
+              ),
+            );
+          }
+          return snapshot.data ?? const LoginScreen();
+        },
+      ),
     );
   }
 
@@ -65,4 +100,3 @@ class _MyDiaryAppState extends State<MyDiaryApp> {
     super.dispose();
   }
 }
-

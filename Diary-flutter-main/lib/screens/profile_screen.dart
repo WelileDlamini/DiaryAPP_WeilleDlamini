@@ -1,6 +1,10 @@
+// ==================================================
+// MyDiary - Profile Screen
+// Developer: Welile Dlamini
+// Course: Mobile App Final Project (CS441)
+// Date: April 2026
+// ==================================================
 
-
-import 'package:diary/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -11,10 +15,12 @@ import 'statistics_screen.dart';
 import 'reminders_screen.dart';
 import 'pin_setup_screen.dart';
 import 'pin_verify_screen.dart';
+import '../main.dart';
 import '../services/database_service.dart';
 import '../services/access_code_service.dart';
 import '../services/media_service.dart';
 import '../services/notification_service.dart';
+import 'login_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -443,6 +449,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  // ==================================================
+  // LOGOUT METHOD
+  // ==================================================
+  void _logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+    
+    if (mounted) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -783,7 +804,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
             const SizedBox(height: 32),
 
-            // Logout Button
+            // Logout Button (Updated with new _logout method)
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 16),
               width: double.infinity,
@@ -802,28 +823,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             child: const Text('Cancel'),
                           ),
                           TextButton(
-                            onPressed: () async {
+                            onPressed: () {
                               Navigator.of(context).pop();
-
-                              await AccessCodeService.clearLoginState();
-
-                              final hasActivePin = await AccessCodeService
-                                      .isAccessCodeEnabled() &&
-                                  await AccessCodeService.hasAccessCode();
-
-                              if (hasActivePin) {
-                                SystemNavigator.pop();
-                              } else {
-                                if (mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('Signed out.'),
-                                      backgroundColor: Colors.green,
-                                    ),
-                                  );
-                                }
-                              }
+                              _logout();
                             },
+                            style: TextButton.styleFrom(
+                              foregroundColor: Colors.red,
+                            ),
                             child: const Text('Sign Out'),
                           ),
                         ],
@@ -858,7 +864,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 }
 
-
+// ==================================================
+// Profile Statistics Widget
+// ==================================================
 class _ProfileStat extends StatelessWidget {
   final String value;
   final String label;
@@ -889,7 +897,9 @@ class _ProfileStat extends StatelessWidget {
   }
 }
 
-
+// ==================================================
+// Menu Section Widget
+// ==================================================
 class _MenuSection extends StatelessWidget {
   final String title;
   final List<Widget> items;
@@ -935,7 +945,9 @@ class _MenuSection extends StatelessWidget {
   }
 }
 
-
+// ==================================================
+// Menu Item Widget
+// ==================================================
 class _MenuItem extends StatelessWidget {
   final IconData icon;
   final String title;
