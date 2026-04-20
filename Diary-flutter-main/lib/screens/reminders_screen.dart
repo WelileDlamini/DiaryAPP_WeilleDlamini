@@ -1,5 +1,4 @@
 import 'package:diary/main.dart';
-import 'package:diary/screens/statistics_screen.dart';
 import 'package:flutter/material.dart';
 import '../services/notification_service.dart';
 

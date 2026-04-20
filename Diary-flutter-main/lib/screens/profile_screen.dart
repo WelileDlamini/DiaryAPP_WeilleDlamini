@@ -6,7 +6,6 @@
 // ==================================================
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:io';
 import '../components/bottom_nav.dart';
@@ -34,6 +33,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool accessCodeEnabled = false;
   Map<String, int> _stats = {'total': 0, 'favorites': 0, 'consecutive_days': 0};
   String _userName = 'User';
+  String _userEmail = 'user@example.com';
   String? _profileImagePath;
 
   @override
@@ -75,10 +75,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _loadUserName() async {
     final prefs = await SharedPreferences.getInstance();
-    final savedName = prefs.getString('user_name');
+    final savedName = prefs.getString('username');
     if (mounted && savedName != null) {
       setState(() {
         _userName = savedName;
+        _userEmail = prefs.getString('email') ?? 'user@example.com';
       });
     }
   }
@@ -623,7 +624,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'user@example.com',
+                    _userEmail,
                     style: TextStyle(
                       fontSize: 16,
                       color: Theme.of(context).textTheme.bodyMedium?.color,

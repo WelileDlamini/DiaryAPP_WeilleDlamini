@@ -1,6 +1,5 @@
 
 import 'package:diary/main.dart';
-import 'package:diary/screens/statistics_screen.dart';
 import 'package:flutter/material.dart';
 import '../components/bottom_nav.dart';
 import 'create_note_screen.dart';

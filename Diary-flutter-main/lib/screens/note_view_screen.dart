@@ -1,7 +1,6 @@
 
 
 import 'package:diary/main.dart';
-import 'package:diary/screens/statistics_screen.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import '../models/diary_entry_isar.dart';

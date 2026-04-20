@@ -20,6 +20,8 @@ class DiaryEntry {
   late List<String> attachedAudios;
 
   @Index()
+  int userId = 0;
+
   late bool isFavorite;
 
   late DateTime createdAt;
@@ -35,6 +37,7 @@ class DiaryEntry {
     this.tags = const [],
     this.attachedImages = const [],
     this.attachedAudios = const [],
+    this.userId = 0,
     this.isFavorite = false,
   }) {
     createdAt = DateTime.now();
@@ -56,4 +59,5 @@ class DiaryEntry {
     if (content.length <= 100) return content;
     return "${content.substring(0, 100)}...";
   }
+
 }

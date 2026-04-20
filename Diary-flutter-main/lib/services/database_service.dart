@@ -1,6 +1,7 @@
 
 
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:isar/isar.dart';
 import '../models/diary_entry_isar.dart';
 
@@ -37,6 +38,8 @@ class DatabaseService {
   Future<int> createEntry(DiaryEntry entry) async {
     final isar = await database;
     return await isar.writeTxn(() async {
+      final prefs = await SharedPreferences.getInstance();
+      entry.userId = prefs.getInt('user_id') ?? 0;
       return await isar.diaryEntrys.put(entry);
     });
   }
@@ -44,7 +47,9 @@ class DatabaseService {
   /// Get all diary entries (sorted by date descending)
   Future<List<DiaryEntry>> getAllEntries() async {
     final isar = await database;
-    return await isar.diaryEntrys.where().sortByDateDesc().findAll();
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt('user_id') ?? 0;
+    return await isar.diaryEntrys.filter().userIdEqualTo(userId).sortByDateDesc().findAll();
   }
 
   /// Get entries by specific date
@@ -63,9 +68,7 @@ class DatabaseService {
   Future<List<DiaryEntry>> getFavoriteEntries() async {
     final isar = await database;
     return await isar.diaryEntrys
-        .where()
-        .isFavoriteEqualTo(true)
-        .sortByDateDesc()
+        .filter().isFavoriteEqualTo(true).sortByDateDesc()
         .findAll();
   }
 
@@ -130,9 +133,11 @@ class DatabaseService {
   /// Get diary statistics (total, favorites, consecutive days)
   Future<Map<String, int>> getStatistics() async {
     final isar = await database;
-    final totalEntries = await isar.diaryEntrys.count();
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getInt("user_id") ?? 0;
+    final totalEntries = await isar.diaryEntrys.filter().userIdEqualTo(userId).count();
     final favoriteEntries =
-        await isar.diaryEntrys.where().isFavoriteEqualTo(true).count();
+        await isar.diaryEntrys.filter().isFavoriteEqualTo(true).count();
 
     // Calculate consecutive days (last days with entries)
     final now = DateTime.now();
@@ -176,3 +181,4 @@ class DatabaseService {
     }
   }
 }
+

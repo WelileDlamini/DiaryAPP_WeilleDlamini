@@ -1,8 +1,10 @@
 
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/pin_verify_screen.dart';
 import 'screens/home_screen.dart';
+import 'screens/login_screen.dart';
 import 'services/access_code_service.dart';
 
 class SecurityWrapper extends StatefulWidget {
@@ -85,6 +87,11 @@ class _SecurityWrapperState extends State<SecurityWrapper>
     }
   }
 
+  Future<bool> _checkIsLoggedIn() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('is_logged_in') ?? false;
+  }
+
   void _onUnlocked() {
     setState(() {
       _isLocked = false;
@@ -108,6 +115,12 @@ class _SecurityWrapperState extends State<SecurityWrapper>
       );
     }
 
-    return const HomeScreen();
+    return FutureBuilder<bool>(
+      future: _checkIsLoggedIn(),
+      builder: (context, snapshot) {
+        if (snapshot.data == true) return const HomeScreen();
+        return const LoginScreen();
+      },
+    );
   }
 }
